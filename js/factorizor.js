@@ -55,17 +55,24 @@ titleState = {
 playState = {
     create: function() {
         'use strict';
-        var block;
+        var block, i, enemy;
 
         this.keyboard = game.input.keyboard;
 
-        game.physics.startSystem(Phaser.Physics.ARCADE);
-
+        // game.physics.startSystem(Phaser.Physics.ARCADE);
+        game.physics.startSystem(Phaser.Physics.P2JS);
 
         // Player
+        this.player = game.add.sprite(300, 200, '');
+        game.physics.p2.enable(this.player);
+        this.player.body.setCircle(8);
 
         // Enemies
-
+        this.enemies = game.add.physicsGroup(Phaser.Physics.P2JS);
+        for (i=0; i<5; i++) {
+            enemy = this.enemies.create(i*100 + 50, 100, 'enemy');
+        }
+        
         // Controls
         this.cursors = game.input.keyboard.addKeys({
             'up': Phaser.Keyboard.W,
@@ -78,6 +85,9 @@ playState = {
     },
     update: function() {
         'use strict';
+
+        game.physics.arcade.overlap(this.player, this.enemies,
+                                    this.end, null, this);
 
     },
     fire: function() {
