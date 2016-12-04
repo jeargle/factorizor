@@ -62,10 +62,10 @@ playState = {
         // game.physics.startSystem(Phaser.Physics.ARCADE);
         game.physics.startSystem(Phaser.Physics.P2JS);
 
-        // Player
-        this.player = game.add.sprite(300, 200, '');
-        game.physics.p2.enable(this.player);
-        this.player.body.setCircle(8);
+        // Gun
+        this.gun = game.add.sprite(300, 200, '');
+        game.physics.p2.enable(this.gun);
+        this.gun.body.setCircle(8);
 
         // Enemies
         this.enemies = game.add.physicsGroup(Phaser.Physics.P2JS);
@@ -86,7 +86,7 @@ playState = {
     update: function() {
         'use strict';
 
-        game.physics.arcade.overlap(this.player, this.enemies,
+        game.physics.arcade.overlap(this.gun, this.enemies,
                                     this.end, null, this);
 
     },
