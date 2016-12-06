@@ -22,6 +22,8 @@ loadState = {
                                  fill: '#ffffff'});
         
         // Load images
+        game.load.image('gun', 'assets/circle-blue.png');
+        game.load.image('enemy', 'assets/circle-red.png');
 
         // Load sound effects
     },
@@ -59,18 +61,19 @@ playState = {
 
         this.keyboard = game.input.keyboard;
 
-        // game.physics.startSystem(Phaser.Physics.ARCADE);
-        game.physics.startSystem(Phaser.Physics.P2JS);
+        game.physics.startSystem(Phaser.Physics.ARCADE);
+        // game.physics.startSystem(Phaser.Physics.P2JS);
 
         // Gun
-        this.gun = game.add.sprite(300, 200, '');
-        game.physics.p2.enable(this.gun);
-        this.gun.body.setCircle(8);
+        this.gun = game.add.sprite(400, 300, 'gun');
+        game.physics.arcade.enable(this.gun);
+        this.gun.body.setCircle(16);
 
         // Enemies
-        this.enemies = game.add.physicsGroup(Phaser.Physics.P2JS);
+        this.enemies = game.add.physicsGroup(Phaser.Physics.ARCADE);
         for (i=0; i<5; i++) {
             enemy = this.enemies.create(i*100 + 50, 100, 'enemy');
+            enemy.body.setCircle(16);
         }
         
         // Controls
