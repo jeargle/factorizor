@@ -23,6 +23,7 @@ loadState = {
         
         // Load images
         game.load.image('gun', 'assets/circle-blue.png');
+        game.load.image('bullet', 'assets/bullet.png');
         game.load.image('enemy', 'assets/circle-red.png');
 
         // Load sound effects
@@ -62,17 +63,33 @@ playState = {
         this.keyboard = game.input.keyboard;
 
         game.physics.startSystem(Phaser.Physics.ARCADE);
-        // game.physics.startSystem(Phaser.Physics.P2JS);
 
         // Gun
         this.gun = game.add.sprite(400, 300, 'gun');
+        this.gun.anchor.setTo(0.5, 0.5);
         game.physics.arcade.enable(this.gun);
         this.gun.body.setCircle(16);
+        this.gun.angle -= 90;
 
+        // Bullets
+        this.bullets = game.add.physicsGroup(Phaser.Physics.ARCADE);
+        this.bullets.createMultiple(30, 'bullet');
+        this.bullets.setAll('anchor.x', 0.5);
+        this.bullets.setAll('anchor.y', 0.5);
+        this.bullets.setAll('outOfBoundsKill', true);
+        this.bullets.setAll('checkWorldBounds', true);
+        
+        this.bulletTime = 0;
+        this.bulletTimeOffset = 300;
+        this.bulletSpeed = 500;
+
+        // this.fireButton = this.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        
         // Enemies
         this.enemies = game.add.physicsGroup(Phaser.Physics.ARCADE);
         for (i=0; i<5; i++) {
             enemy = this.enemies.create(i*100 + 50, 100, 'enemy');
+            enemy.anchor.setTo(0.5, 0.5);
             enemy.body.setCircle(16);
         }
         
@@ -92,9 +109,36 @@ playState = {
         game.physics.arcade.overlap(this.gun, this.enemies,
                                     this.end, null, this);
 
+        if (this.cursors.left.isDown) {
+            this.gun.angle -= 1;
+            // console.log('angle: ' + this.gun.angle);
+        }
+        
+        if (this.cursors.right.isDown) {
+            this.gun.angle += 1;
+            // console.log('angle: ' + this.gun.angle);
+        }
+        
+        if (this.cursors.fire.isDown) {
+            this.fire();
+        }
     },
     fire: function() {
         'use strict';
+        var bullet;
+        
+        if (game.time.now > this.bulletTime) {
+            this.bulletTime = game.time.now + this.bulletTimeOffset;
+            bullet = this.bullets.getFirstExists(false);
+            
+            if (bullet) {
+                bullet.reset(this.gun.x, this.gun.y);
+                console.log('angle: ' + this.gun.angle);
+                game.physics.arcade.velocityFromAngle(
+                    this.gun.angle, this.bulletSpeed, bullet.body.velocity
+                );
+            }
+        }
     },
     end: function() {
         'use strict';
