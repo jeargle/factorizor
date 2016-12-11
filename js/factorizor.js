@@ -58,7 +58,7 @@ titleState = {
 playState = {
     create: function() {
         'use strict';
-        var block, i, enemy;
+        var block, i, enemy, textStyle, text;
 
         this.keyboard = game.input.keyboard;
 
@@ -87,10 +87,22 @@ playState = {
         
         // Enemies
         this.enemies = game.add.physicsGroup(Phaser.Physics.ARCADE);
+        textStyle = {
+            font: '20px Arial',
+            fill: '#ffffff',
+            // wordWrap: true,
+            // wordWrapWidth: sprite.width,
+            align: 'center',
+            // backgroundColor: '#ffff00'
+        };
         for (i=0; i<5; i++) {
             enemy = this.enemies.create(i*100 + 50, 100, 'enemy');
             enemy.anchor.setTo(0.5, 0.5);
             enemy.body.setCircle(16);
+            text = game.add.text(enemy.x,
+                                 enemy.y + 2,
+                                 i+1, textStyle);
+            text.anchor.set(0.5);
         }
         
         // Controls
