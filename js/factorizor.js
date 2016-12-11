@@ -22,7 +22,7 @@ loadState = {
                                  fill: '#ffffff'});
         
         // Load images
-        game.load.image('gun', 'assets/circle-blue.png');
+        game.load.image('gun', 'assets/gun-blue.png');
         game.load.image('bullet', 'assets/bullet.png');
         game.load.image('enemy', 'assets/circle-red.png');
 
@@ -65,10 +65,10 @@ playState = {
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
         // Gun
-        this.gun = game.add.sprite(400, 300, 'gun');
+        this.gun = game.add.sprite(400, 400, 'gun');
         this.gun.anchor.setTo(0.5, 0.5);
         game.physics.arcade.enable(this.gun);
-        this.gun.body.setCircle(16);
+        this.gun.body.setCircle(28);
         this.gun.angle -= 90;
 
         // Bullets
@@ -125,15 +125,18 @@ playState = {
     },
     fire: function() {
         'use strict';
-        var bullet;
+        var bullet, bulletOffset;
         
         if (game.time.now > this.bulletTime) {
             this.bulletTime = game.time.now + this.bulletTimeOffset;
             bullet = this.bullets.getFirstExists(false);
             
             if (bullet) {
-                bullet.reset(this.gun.x, this.gun.y);
-                console.log('angle: ' + this.gun.angle);
+                bulletOffset = game.physics.arcade.velocityFromAngle(
+                    this.gun.angle, 28
+                );
+                bullet.reset(this.gun.x + bulletOffset.x,
+                             this.gun.y + bulletOffset.y);
                 game.physics.arcade.velocityFromAngle(
                     this.gun.angle, this.bulletSpeed, bullet.body.velocity
                 );
