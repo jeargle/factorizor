@@ -25,6 +25,7 @@ loadState = {
         game.load.image('gun', 'assets/gun-blue.png');
         game.load.image('bullet', 'assets/bullet.png');
         game.load.image('enemy', 'assets/circle-red.png');
+        game.load.image('block', 'assets/square-blue.png');
 
         // Load sound effects
     },
@@ -109,7 +110,7 @@ playState = {
         this.primes = [2, 3, 5, 7, 11, 13, 17, 19];
         primeStyle = {
             font: '20px Arial',
-            fill: '#ffffff',
+            fill: '#666666',
             align: 'center',
         };
         this.wheel = [];
@@ -123,10 +124,17 @@ playState = {
         this.wheel[2].y = 500;
         this.wheel[1].y = 525;
         this.wheel[0].y = 550;
+        this.wheel[2].fill = '#ffffff';
         this.chosenPrime = this.primes[2];   // active prime
         this.tweenPrimes = [0, 1, 2, 3, 4];
         this.primeTime = 0;
         this.primeTimeOffset = 200;
+
+        // Blocks
+        block = game.add.sprite(400, 443, 'block');
+        block.anchor.setTo(0.5, 0.5);
+        block = game.add.sprite(400, 550, 'block');
+        block.anchor.setTo(0.5, 0.5);
         
         // Controls
         this.cursors = game.input.keyboard.addKeys({
@@ -181,9 +189,17 @@ playState = {
             for (i=0; i<4; i++) {
                 prime = this.wheel[this.tweenPrimes[i]];
                 tween = game.add.tween(prime)
-                    .to({y: prime.y-25}, 200,
+                    .to({y: prime.y-25}, 180,
                         Phaser.Easing.Linear.None,
                         true);
+                if (i === 1) {
+                    tween.onComplete.add(function() {
+                        this.fill = '#ffffff';
+                    }, prime);
+                }
+                else if (i === 2) {
+                    prime.fill = '#666666';
+                }
             }
             
             for (i=4; i>0; i--) {
@@ -204,9 +220,17 @@ playState = {
             for (i=1; i<5; i++) {
                 prime = this.wheel[this.tweenPrimes[i]];
                 tween = game.add.tween(prime)
-                    .to({y: prime.y+25}, 200,
+                    .to({y: prime.y+25}, 180,
                         Phaser.Easing.Linear.None,
                         true);
+                if (i === 3) {
+                    tween.onComplete.add(function() {
+                        this.fill = '#ffffff';
+                    }, prime);
+                }
+                else if (i === 2) {
+                    prime.fill = '#666666';
+                }
             }
             
             for (i=0; i<4; i++) {
