@@ -59,7 +59,7 @@ titleState = {
 playState = {
     create: function() {
         'use strict';
-        var block, i, enemy, textStyle, text, primeStyle;
+        var block, i, primeStyle;
 
         this.keyboard = game.input.keyboard;
 
@@ -88,23 +88,8 @@ playState = {
         
         // Enemies
         this.enemies = game.add.physicsGroup(Phaser.Physics.ARCADE);
-        textStyle = {
-            font: '20px Arial',
-            fill: '#ffffff',
-            // wordWrap: true,
-            // wordWrapWidth: sprite.width,
-            align: 'center',
-            // backgroundColor: '#ffff00'
-        };
-        for (i=0; i<5; i++) {
-            enemy = this.enemies.create(i*100 + 50, 100, 'enemy');
-            enemy.anchor.setTo(0.5, 0.5);
-            enemy.body.setCircle(16);
-            text = game.add.text(enemy.x,
-                                 enemy.y + 2,
-                                 i+1, textStyle);
-            text.anchor.set(0.5);
-        }
+        this.createEnemies();
+        this.enemiesKilled = 0;
 
         // Factor wheel
         this.primes = [2, 3, 5, 7, 11, 13, 17, 19];
@@ -151,6 +136,8 @@ playState = {
 
         game.physics.arcade.overlap(this.gun, this.enemies,
                                     this.end, null, this);
+        game.physics.arcade.overlap(this.bullets, this.enemies,
+                                    this.hitEnemy, null, this);
 
         if (this.cursors.left.isDown) {
             this.gun.angle -= 1;
@@ -267,6 +254,43 @@ playState = {
                 );
             }
         }
+    },
+    createEnemies: function() {
+        'use strict';
+        var textStyle, i, enemy, text;
+        
+        textStyle = {
+            font: '20px Arial',
+            fill: '#ffffff',
+            // wordWrap: true,
+            // wordWrapWidth: sprite.width,
+            align: 'center',
+            // backgroundColor: '#ffff00'
+        };
+        
+        for (i=0; i<5; i++) {
+            enemy = this.enemies.create(i*100 + 50, 100, 'enemy');
+            enemy.anchor.setTo(0.5, 0.5);
+            enemy.body.setCircle(16);
+            enemy.text = game.add.text(enemy.x,
+                                       enemy.y + 2,
+                                       i+1, textStyle);
+            enemy.text.anchor.set(0.5);
+        }
+    },
+    hitEnemy: function(bullet, enemy) {
+        'use strict';
+        
+        bullet.kill();
+    },
+    killEnemy: function(enemy) {
+        'use strict';
+
+        enemy.text.kill();
+        enemy.kill();
+        // this.explosion.play();
+        score += 10;
+        this.enemiesKilled++;
     },
     end: function() {
         'use strict';
