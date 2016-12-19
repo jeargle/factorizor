@@ -57,6 +57,29 @@ titleState = {
 };
 
 playState = {
+    factors: {
+        2: null,
+        3: null,
+        4: {2: 2},
+        5: null,
+        6: {2: 1, 3: 1},
+        7: null,
+        8: {2: 3},
+        9: {3: 2},
+        10: {2: 1, 5: 1},
+        11: null,
+        12: {2: 2, 3: 1},
+        13: null,
+        14: {2: 1, 7: 1},
+        15: {3: 1, 5: 1},
+        16: {2: 4},
+        17: null,
+        18: {2: 1, 3: 2},
+        19: null,
+        20: {2: 2, 5: 1},
+        21: {3: 1, 7: 1},
+        22: {2: 1, 11: 1},
+    },
     create: function() {
         'use strict';
         var block, i, primeStyle;
@@ -170,7 +193,7 @@ playState = {
         'use strict';
         var tween, prime, i;
 
-        if (scrollDir === 'up') {
+        if (scrollDir === 'down') {
             this.primeTime = game.time.now +
                 this.primeTimeOffset;
             for (i=0; i<4; i++) {
@@ -268,20 +291,40 @@ playState = {
             // backgroundColor: '#ffff00'
         };
         
-        for (i=0; i<5; i++) {
-            enemy = this.enemies.create(i*100 + 50, 100, 'enemy');
+        for (i=2; i<8; i++) {
+            enemy = this.enemies.create((i-2)*100 + 50, 100, 'enemy');
             enemy.anchor.setTo(0.5, 0.5);
             enemy.body.setCircle(16);
+            enemy.number = game.rnd.integerInRange(2,22);
             enemy.text = game.add.text(enemy.x,
                                        enemy.y + 2,
-                                       i+1, textStyle);
+                                       enemy.number,
+                                       textStyle);
             enemy.text.anchor.set(0.5);
         }
     },
     hitEnemy: function(bullet, enemy) {
         'use strict';
+        var factors;
         
         bullet.kill();
+
+        factors = this.factors[enemy.number];
+        if (factors === null) {
+            if (this.chosenPrime === enemy.number) {
+                this.killEnemy(enemy);
+            }
+            else {
+                console.log('bounce 1');
+            }
+        }
+        else if (factors[this.chosenPrime] != null) {
+            enemy.number /= this.chosenPrime;
+            enemy.text.text = enemy.number;
+        }
+        else {
+            console.log('bounce 2');
+        }
     },
     killEnemy: function(enemy) {
         'use strict';
