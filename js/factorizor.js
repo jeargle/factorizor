@@ -153,6 +153,11 @@ playState = {
             'fire': Phaser.Keyboard.SPACEBAR
         });
 
+        // Score
+        score = 0;
+        this.scoreText = game.add.text(600, 475, 'Score: ' + score,
+                                       {font: '30px Courier',
+                                        fill: '#ffffff'});
     },
     update: function() {
         'use strict';
@@ -184,6 +189,8 @@ playState = {
         if (this.cursors.fire.isDown) {
             this.fire();
         }
+        
+        this.scoreText.text = 'Score: ' + score;
     },
     /**
      * Move prime factor wheel up or down.
