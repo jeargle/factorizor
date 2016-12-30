@@ -111,8 +111,17 @@ playState = {
         
         // Enemies
         this.enemies = game.add.physicsGroup(Phaser.Physics.ARCADE);
-        this.createEnemies();
+        // this.createEnemies();
+        this.enemies.createMultiple(30, 'enemy');
+        // this.enemies.setAll('outOfBoundsKill', true);
+        // this.enemies.setAll('checkWorldBounds', true);
+        this.enemies.setAll('anchor.x', 0.5);
+        this.enemies.setAll('anchor.y', 0.5);
         this.enemiesKilled = 0;
+        this.enemyTime = 0;
+        this.enemyTimeOffset = 2000;
+        this.enemySpeed = 20;
+        // this.explosion = game.add.audio('explosion');
 
         // Factor wheel
         this.primes = [2, 3, 5, 7, 11, 13, 17, 19];
@@ -188,6 +197,10 @@ playState = {
         
         if (this.cursors.fire.isDown) {
             this.fire();
+        }
+        
+        if (game.time.now > this.enemyTime) {
+            this.dispatchEnemy();
         }
         
         this.scoreText.text = 'Score: ' + score;
@@ -310,6 +323,51 @@ playState = {
             enemy.text.anchor.set(0.5);
         }
     },
+    dispatchEnemy: function() {
+        'use strict';
+        var enemy, textStyle, xPos, approachAngle;
+
+        // console.log('dispatchEnemy()');
+        
+        enemy = this.enemies.getFirstExists(false);
+
+        textStyle = {
+            font: '20px Arial',
+            fill: '#ffffff',
+            // wordWrap: true,
+            // wordWrapWidth: sprite.width,
+            align: 'center',
+            // backgroundColor: '#ffff00'
+        };
+        
+        if (enemy) {
+            enemy.body.setCircle(16);
+            enemy.number = game.rnd.integerInRange(2,22);
+            xPos = game.rnd.integerInRange(1,6)*100;
+            enemy.reset(xPos, 30);
+            approachAngle = game.physics.arcade.angleBetween(enemy, this.gun);
+            game.physics.arcade.velocityFromRotation(
+                approachAngle, this.enemySpeed, enemy.body.velocity
+            );
+            enemy.text = game.add.text(enemy.x,
+                                       enemy.y + 2,
+                                       enemy.number,
+                                       textStyle);
+            enemy.text.anchor.set(0.5);
+            game.physics.arcade.enable(enemy.text);
+            game.physics.arcade.velocityFromRotation(
+                approachAngle, this.enemySpeed, enemy.text.body.velocity
+            );
+            this.enemyTime = game.time.now +
+                this.enemyTimeOffset +
+                game.rnd.integerInRange(0,8)*200;
+        }
+    },
+    /**
+     *
+     * @param bullet
+     * @param enemy
+     */
     hitEnemy: function(bullet, enemy) {
         'use strict';
         var factors;
@@ -333,6 +391,10 @@ playState = {
             console.log('bounce 2');
         }
     },
+    /**
+     *
+     * @param enemy
+     */
     killEnemy: function(enemy) {
         'use strict';
 
@@ -342,6 +404,9 @@ playState = {
         score += 10;
         this.enemiesKilled++;
     },
+    /**
+     * Move to end screen.
+     */
     end: function() {
         'use strict';
         game.state.start('end');
