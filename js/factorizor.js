@@ -278,6 +278,9 @@ playState = {
         this.chosenPrime = this.primes[this.tweenPrimes[2]];
         console.log(this.chosenPrime);
     },
+    /**
+     * Fire the main gun.
+     */
     fire: function() {
         'use strict';
         var bullet, bulletOffset;
@@ -298,6 +301,9 @@ playState = {
             }
         }
     },
+    /**
+     * Create the underlying enemy pool.
+     */
     createEnemies: function() {
         'use strict';
         var textStyle, i, enemy, text;
@@ -323,6 +329,9 @@ playState = {
             enemy.text.anchor.set(0.5);
         }
     },
+    /**
+     * Add a single enemy to the screen.
+     */
     dispatchEnemy: function() {
         'use strict';
         var enemy, textStyle, xPos, approachAngle;
@@ -364,7 +373,10 @@ playState = {
         }
     },
     /**
-     *
+     * Process events after a bullet strikes an enemy.  If the bullet
+     * was fired with a factor of the enemy's number, remove that
+     * factor from the number, otherwise the enemy proceeds without
+     * damage.
      * @param bullet
      * @param enemy
      */
@@ -392,7 +404,7 @@ playState = {
         }
     },
     /**
-     *
+     * Destroy and remove an enemy from the screen.
      * @param enemy
      */
     killEnemy: function(enemy) {
