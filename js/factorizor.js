@@ -1,4 +1,4 @@
-var score, bootState, loadState, titleState, playState, endState, game;
+var score, level, bootState, loadState, titleState, playState, levelState, endState, game;
 
 score = 0;
 
@@ -52,6 +52,7 @@ titleState = {
     },
     start: function() {
         'use strict';
+        level = 0;
         game.state.start('play');
     }
 };
@@ -415,6 +416,10 @@ playState = {
         // this.explosion.play();
         score += 10;
         this.enemiesKilled++;
+
+        if (this.enemiesKilled === 10) {
+            game.state.start('level');
+        }
     },
     /**
      * Move to end screen.
@@ -422,6 +427,28 @@ playState = {
     end: function() {
         'use strict';
         game.state.start('end');
+    }
+};
+
+levelState = {
+    create: function() {
+        'use strict';
+        var nameLbl, startLbl, wKey;
+
+        nameLbl = game.add.text(80, 160, 'LEVEL ' + (level+1) + ' COMPLETE',
+                                {font: '50px Courier',
+                                 fill: '#ffffff'});
+        startLbl = game.add.text(80, 240, 'press "W" to start next level',
+                                 {font: '30px Courier',
+                                  fill: '#ffffff'});
+
+        wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
+        wKey.onDown.addOnce(this.start, this);
+    },
+    start: function() {
+        'use strict';
+        level += 1;
+        game.state.start('play');
     }
 };
 
@@ -456,6 +483,7 @@ game.state.add('boot', bootState);
 game.state.add('load', loadState);
 game.state.add('title', titleState);
 game.state.add('play', playState);
+game.state.add('level', levelState);
 game.state.add('end', endState);
 
 game.state.start('boot');
