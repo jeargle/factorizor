@@ -28,6 +28,19 @@ loadState = {
         game.load.image('block', 'assets/square-blue.png');
 
         // Load sound effects
+        game.load.audio('wheelC4', 'assets/C4.wav');
+        game.load.audio('wheelCs4', 'assets/Cs4.wav');
+        game.load.audio('wheelD4', 'assets/D4.wav');
+        game.load.audio('wheelDs4', 'assets/Ds4.wav');
+        game.load.audio('wheelE4', 'assets/E4.wav');
+        game.load.audio('wheelF4', 'assets/F4.wav');
+        game.load.audio('wheelFs4', 'assets/Fs4.wav');
+        game.load.audio('wheelG4', 'assets/G4.wav');
+        game.load.audio('wheelGs4', 'assets/Gs4.wav');
+        game.load.audio('wheelA4', 'assets/A4.wav');
+        game.load.audio('wheelAs4', 'assets/As4.wav');
+        game.load.audio('wheelB4', 'assets/B4.wav');
+        game.load.audio('wheelC5', 'assets/C5.wav');
     },
     create: function() {
         'use strict';
@@ -52,6 +65,7 @@ titleState = {
     },
     start: function() {
         'use strict';
+        score = 0;
         level = 0;
         game.state.start('play');
     }
@@ -148,6 +162,16 @@ playState = {
         this.primeTime = 0;
         this.primeTimeOffset = 200;
 
+        this.wheelScale = [];
+        this.wheelScale.push(game.add.audio('wheelC4'));
+        this.wheelScale.push(game.add.audio('wheelD4'));
+        this.wheelScale.push(game.add.audio('wheelE4'));
+        this.wheelScale.push(game.add.audio('wheelF4'));
+        this.wheelScale.push(game.add.audio('wheelG4'));
+        this.wheelScale.push(game.add.audio('wheelA4'));
+        this.wheelScale.push(game.add.audio('wheelB4'));
+        this.wheelScale.push(game.add.audio('wheelC5'));
+
         // Blocks
         block = game.add.sprite(400, 443, 'block');
         block.anchor.setTo(0.5, 0.5);
@@ -164,10 +188,11 @@ playState = {
         });
 
         // Score
-        score = 0;
-        this.scoreText = game.add.text(600, 475, 'Score: ' + score,
-                                       {font: '30px Courier',
-                                        fill: '#ffffff'});
+        this.scoreText = game.add.text(
+            600, 475, 'Score: ' + score,
+            {font: '30px Courier',
+             fill: '#ffffff'}
+        );
     },
     update: function() {
         'use strict';
@@ -276,7 +301,10 @@ playState = {
             }
             this.wheel[this.tweenPrimes[4]].y = 450;
         }
+
         this.chosenPrime = this.primes[this.tweenPrimes[2]];
+        this.wheelScale[this.tweenPrimes[2]].play();
+
         console.log(this.chosenPrime);
     },
     /**
