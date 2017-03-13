@@ -41,6 +41,13 @@ loadState = {
         game.load.audio('wheelAs4', 'assets/As4.wav');
         game.load.audio('wheelB4', 'assets/B4.wav');
         game.load.audio('wheelC5', 'assets/C5.wav');
+        game.load.audio('explosion', 'assets/explosion.wav');
+        game.load.audio('hit1', 'assets/hit1.wav');
+        game.load.audio('hit2', 'assets/hit2.wav');
+        game.load.audio('hit3', 'assets/hit3.wav');
+        game.load.audio('ping1', 'assets/ping1.wav');
+        game.load.audio('ping2', 'assets/ping2.wav');
+        game.load.audio('ping3', 'assets/ping3.wav');
     },
     create: function() {
         'use strict';
@@ -122,7 +129,15 @@ playState = {
         this.bulletTimeOffset = 200;
         this.bulletSpeed = 500;
 
-        // this.fireButton = this.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        this.hits = [];
+        this.hits.push(game.add.audio('hit1'));
+        this.hits.push(game.add.audio('hit2'));
+        this.hits.push(game.add.audio('hit3'));
+
+        this.pings = [];
+        this.pings.push(game.add.audio('ping1'));
+        this.pings.push(game.add.audio('ping2'));
+        this.pings.push(game.add.audio('ping3'));
         
         // Enemies
         this.enemies = game.add.physicsGroup(Phaser.Physics.ARCADE);
@@ -136,7 +151,7 @@ playState = {
         this.enemyTime = 0;
         this.enemyTimeOffset = 2000;
         this.enemySpeed = 20;
-        // this.explosion = game.add.audio('explosion');
+        this.explosion = game.add.audio('explosion');
 
         // Factor wheel
         this.primes = [2, 3, 5, 7, 11, 13, 17, 19];
@@ -411,7 +426,7 @@ playState = {
      */
     hitEnemy: function(bullet, enemy) {
         'use strict';
-        var factors;
+        var factors, soundIdx;
         
         bullet.kill();
 
@@ -422,14 +437,20 @@ playState = {
             }
             else {
                 console.log('bounce 1');
+                soundIdx = game.rnd.integerInRange(0,2);
+                this.pings[soundIdx].play();
             }
         }
         else if (factors[this.chosenPrime] != null) {
             enemy.number /= this.chosenPrime;
             enemy.text.text = enemy.number;
+            soundIdx = game.rnd.integerInRange(0,2);
+            this.hits[soundIdx].play();
         }
         else {
             console.log('bounce 2');
+            soundIdx = game.rnd.integerInRange(0,2);
+            this.pings[soundIdx].play();
         }
     },
     /**
@@ -441,7 +462,7 @@ playState = {
 
         enemy.text.kill();
         enemy.kill();
-        // this.explosion.play();
+        this.explosion.play();
         score += 10;
         this.enemiesKilled++;
 
@@ -454,6 +475,8 @@ playState = {
      */
     end: function() {
         'use strict';
+
+        this.explosion.play();
         game.state.start('end');
     }
 };
