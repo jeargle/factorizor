@@ -1,4 +1,4 @@
-var score, level, bootState, loadState, titleState, playState, levelState, endState, game;
+var score, level, levels, bootState, loadState, titleState, playState, levelState, endState, game;
 
 score = 0;
 
@@ -78,6 +78,23 @@ titleState = {
     }
 };
 
+/**
+ * Level setup info list.
+ * For each level, there's a list of factors with frequency weights.
+ */
+levels = [
+    [[2, 1], [3, 1], [5, 1], [7, 1]],
+    [[2, 3], [3, 3], [4, 2], [5, 3], [6, 2], [7, 3], [8, 1], [9, 2]],
+    [[2, 3], [3, 3], [4, 2], [5, 3], [6, 2], [7, 3], [8, 1], [9, 2], [10, 2],
+     [11, 3], [12, 1], [13, 3], [14, 2], [15, 2]],
+    [[2, 3], [3, 3], [4, 2], [5, 3], [6, 2], [7, 3], [8, 1], [9, 2], [10, 2],
+     [11, 3], [12, 1], [13, 3], [14, 2], [15, 2],
+     [16, 1], [17, 3], [18, 2], [19, 3], [20, 1]],
+    [[2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [7, 2], [8, 2], [9, 2], [10, 2],
+     [11, 3], [12, 1], [13, 3], [14, 2], [15, 2],
+     [16, 1], [17, 3], [18, 2], [19, 3], [20, 1]]
+];
+
 playState = {
     factors: {
         2: null,
@@ -104,7 +121,7 @@ playState = {
     },
     create: function() {
         'use strict';
-        var block, i, primeStyle;
+        var block, i, j, primeStyle;
 
         this.keyboard = game.input.keyboard;
 
@@ -152,6 +169,18 @@ playState = {
         this.enemyTimeOffset = 2000;
         this.enemySpeed = 20;
         this.explosion = game.add.audio('explosion');
+
+        // Set up enemy frequencies based on level info.
+        this.levelIdx = level;
+        if (this.levelIdx >= levels.length) {
+            this.levelIdx = levels.length-1;
+        }
+        this.enemyFreqs = [];
+        for (i=0; i<levels[this.levelIdx].length; i++) {
+            for (j=0; j<levels[this.levelIdx][i][1]; j++) {
+                this.enemyFreqs.push(i);
+            }
+        }
 
         // Factor wheel
         this.primes = [2, 3, 5, 7, 11, 13, 17, 19];
@@ -378,7 +407,7 @@ playState = {
      */
     dispatchEnemy: function() {
         'use strict';
-        var enemy, textStyle, xPos, approachAngle;
+        var enemy, textStyle, enemyIdx, xPos, approachAngle;
 
         // console.log('dispatchEnemy()');
         
@@ -395,7 +424,8 @@ playState = {
         
         if (enemy) {
             enemy.body.setCircle(16);
-            enemy.number = game.rnd.integerInRange(2,22);
+            enemyIdx = game.rnd.integerInRange(0, this.enemyFreqs.length-1);
+            enemy.number = levels[this.levelIdx][this.enemyFreqs[enemyIdx]][0];
             xPos = game.rnd.integerInRange(1,6)*100;
             enemy.reset(xPos, 30);
             approachAngle = game.physics.arcade.angleBetween(enemy, this.gun);
