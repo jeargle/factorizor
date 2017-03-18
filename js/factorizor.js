@@ -432,10 +432,8 @@ playState = {
             game.physics.arcade.velocityFromRotation(
                 approachAngle, this.enemySpeed, enemy.body.velocity
             );
-            enemy.text = game.add.text(enemy.x,
-                                       enemy.y + 2,
-                                       enemy.number,
-                                       textStyle);
+            enemy.text = game.add.text(enemy.x, enemy.y + 2,
+                                       enemy.number, textStyle);
             enemy.text.anchor.set(0.5);
             game.physics.arcade.enable(enemy.text);
             game.physics.arcade.velocityFromRotation(
@@ -470,6 +468,7 @@ playState = {
                 console.log('bounce 1');
                 soundIdx = game.rnd.integerInRange(0,2);
                 this.pings[soundIdx].play();
+                this.angerEnemy(enemy);
             }
         }
         else if (factors[prime] != null) {
@@ -482,6 +481,7 @@ playState = {
             console.log('bounce 2');
             soundIdx = game.rnd.integerInRange(0,2);
             this.pings[soundIdx].play();
+            this.angerEnemy(enemy);
         }
     },
     /**
@@ -500,6 +500,24 @@ playState = {
         if (this.enemiesKilled === 20) {
             game.state.start('level');
         }
+    },
+    /**
+     * Increase an enemy's velocity due to a bad hit.
+     * @param enemy
+     */
+    angerEnemy: function(enemy) {
+        'use strict';
+        var velX, velY;
+
+        velX = enemy.body.velocity.x;
+        velX += velX * 0.2;
+        velY = enemy.body.velocity.y;
+        velY += velY * 0.2;
+
+        enemy.body.velocity.x = velX;
+        enemy.body.velocity.y = velY;
+        enemy.text.body.velocity.x = velX;
+        enemy.text.body.velocity.y = velY;
     },
     /**
      * Move to end screen.
