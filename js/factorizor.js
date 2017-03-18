@@ -206,15 +206,16 @@ playState = {
         this.primeTime = 0;
         this.primeTimeOffset = 200;
 
-        this.wheelScale = [];
-        this.wheelScale.push(game.add.audio('wheelC4'));
-        this.wheelScale.push(game.add.audio('wheelD4'));
-        this.wheelScale.push(game.add.audio('wheelE4'));
-        this.wheelScale.push(game.add.audio('wheelF4'));
-        this.wheelScale.push(game.add.audio('wheelG4'));
-        this.wheelScale.push(game.add.audio('wheelA4'));
-        this.wheelScale.push(game.add.audio('wheelB4'));
-        this.wheelScale.push(game.add.audio('wheelC5'));
+        this.wheelScale = [
+            game.add.audio('wheelC4'),
+            game.add.audio('wheelD4'),
+            game.add.audio('wheelE4'),
+            game.add.audio('wheelF4'),
+            game.add.audio('wheelG4'),
+            game.add.audio('wheelA4'),
+            game.add.audio('wheelB4'),
+            game.add.audio('wheelC5')
+        ]
 
         // Blocks
         block = game.add.sprite(400, 443, 'block');
@@ -363,6 +364,7 @@ playState = {
             bullet = this.bullets.getFirstExists(false);
             
             if (bullet) {
+                bullet.prime = this.chosenPrime;
                 bulletOffset = game.physics.arcade.velocityFromAngle(
                     this.gun.angle, 28
                 );
@@ -395,10 +397,8 @@ playState = {
             enemy.anchor.setTo(0.5, 0.5);
             enemy.body.setCircle(16);
             enemy.number = game.rnd.integerInRange(2,22);
-            enemy.text = game.add.text(enemy.x,
-                                       enemy.y + 2,
-                                       enemy.number,
-                                       textStyle);
+            enemy.text = game.add.text(enemy.x, enemy.y + 2,
+                                       enemy.number, textStyle);
             enemy.text.anchor.set(0.5);
         }
     },
@@ -456,13 +456,14 @@ playState = {
      */
     hitEnemy: function(bullet, enemy) {
         'use strict';
-        var factors, soundIdx;
-        
+        var prime, factors, soundIdx;
+
+        prime = bullet.prime;
         bullet.kill();
 
         factors = this.factors[enemy.number];
         if (factors === null) {
-            if (this.chosenPrime === enemy.number) {
+            if (prime === enemy.number) {
                 this.killEnemy(enemy);
             }
             else {
@@ -471,8 +472,8 @@ playState = {
                 this.pings[soundIdx].play();
             }
         }
-        else if (factors[this.chosenPrime] != null) {
-            enemy.number /= this.chosenPrime;
+        else if (factors[prime] != null) {
+            enemy.number /= prime;
             enemy.text.text = enemy.number;
             soundIdx = game.rnd.integerInRange(0,2);
             this.hits[soundIdx].play();
@@ -496,7 +497,7 @@ playState = {
         score += 10;
         this.enemiesKilled++;
 
-        if (this.enemiesKilled === 10) {
+        if (this.enemiesKilled === 20) {
             game.state.start('level');
         }
     },
