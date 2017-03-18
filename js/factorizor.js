@@ -1,6 +1,6 @@
-var score, level, levels, bootState, loadState, titleState, playState, levelState, endState, game;
+var score, highScore, level, levels, bootState, loadState, titleState, playState, levelState, endState, game;
 
-score = 0;
+highScore = 0;
 
 bootState = {
     create: function() {
@@ -537,7 +537,7 @@ levelState = {
 endState = {
     create: function() {
         'use strict';
-        var scoreLbl, nameLbl, startLbl, wKey;
+        var scoreLbl, nameLbl, startLbl, highScoreLbl, wKey;
 
         scoreLbl = game.add.text(600, 10, 'Score: ' + score,
                                  {font: '30px Courier',
@@ -548,6 +548,18 @@ endState = {
         startLbl = game.add.text(80, 240, 'press "W" to restart',
                                  {font: '30px Courier',
                                   fill: '#ffffff'});
+
+        if (score <= highScore) {
+            highScoreLbl = game.add.text(510, 50, 'High Score: ' + highScore,
+                                         {font: '30px Courier',
+                                          fill: '#ffffff'});
+        }
+        else {
+            highScoreLbl = game.add.text(300, 50, 'New High Score!',
+                                         {font: '30px Courier',
+                                          fill: '#ffffff'});
+            highScore = score;
+        }
 
         wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
         wKey.onDown.addOnce(this.restart, this);
