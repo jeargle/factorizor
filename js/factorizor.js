@@ -119,6 +119,7 @@ playState = {
         21: {3: 1, 7: 1},
         22: {2: 1, 11: 1},
     },
+    enemyCounts: [5, 10, 10, 20, 20],
     create: function() {
         'use strict';
         var block, i, j, primeStyle;
@@ -164,6 +165,7 @@ playState = {
         // this.enemies.setAll('checkWorldBounds', true);
         this.enemies.setAll('anchor.x', 0.5);
         this.enemies.setAll('anchor.y', 0.5);
+        this.enemiesDispatched = 0;
         this.enemiesKilled = 0;
         this.enemyTime = 0;
         this.enemyTimeOffset = 2000;
@@ -175,6 +177,7 @@ playState = {
         if (this.levelIdx >= levels.length) {
             this.levelIdx = levels.length-1;
         }
+        this.enemyTotal = this.enemyCounts[this.levelIdx];
         this.enemyFreqs = [];
         for (i=0; i<levels[this.levelIdx].length; i++) {
             for (j=0; j<levels[this.levelIdx][i][1]; j++) {
@@ -270,7 +273,8 @@ playState = {
             this.fire();
         }
         
-        if (game.time.now > this.enemyTime) {
+        if (game.time.now > this.enemyTime &&
+            this.enemiesDispatched < this.enemyTotal) {
             this.dispatchEnemy();
         }
         
@@ -442,6 +446,7 @@ playState = {
             this.enemyTime = game.time.now +
                 this.enemyTimeOffset +
                 game.rnd.integerInRange(0,8)*200;
+            this.enemiesDispatched++;
         }
     },
     /**
@@ -497,7 +502,7 @@ playState = {
         score += 10;
         this.enemiesKilled++;
 
-        if (this.enemiesKilled === 20) {
+        if (this.enemiesKilled === this.enemyTotal) {
             game.state.start('level');
         }
     },
