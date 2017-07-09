@@ -172,6 +172,12 @@ playState = {
 
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
+        this.lastDir = null;
+        this.dirTime1 = 0;
+        this.dirTime2 = 0;
+        this.dirTime1Offset = 200;
+        this.dirTime2Offset = 500;
+
         // Gun
         this.gun = game.add.sprite(400, 400, 'gun');
         this.gun.anchor.setTo(0.5, 0.5);
@@ -289,7 +295,9 @@ playState = {
     },
     update: function() {
         'use strict';
+        var now;
 
+        now = game.time.now;
         game.physics.arcade.overlap(this.gun, this.enemies,
                                     this.end, null, this);
         game.physics.arcade.overlap(this.bullets, this.enemies,
@@ -298,14 +306,49 @@ playState = {
         if (this.cursors.left.isDown) {
             this.gun.angle -= 1;
             // console.log('angle: ' + this.gun.angle);
+            if (this.lastDir != 'left') {
+                this.lastDir = 'left';
+                this.dirTime1 = now + this.dirTime1Offset;
+                this.dirTime2 = now + this.dirTime2Offset;
+            }
+            else {
+                if (now > this.dirTime2) {
+                    this.gun.angle -= 3;
+                }
+                else if (now > this.dirTime1) {
+                    this.gun.angle -= 2;
+                }
+                else {
+                    this.gun.angle -= 1;
+                }
+            }
         }
-        
-        if (this.cursors.right.isDown) {
-            this.gun.angle += 1;
+        else if (this.cursors.right.isDown) {
             // console.log('angle: ' + this.gun.angle);
+            if (this.lastDir != 'right') {
+                this.lastDir = 'right';
+                this.dirTime1 = now + this.dirTime1Offset;
+                this.dirTime2 = now + this.dirTime2Offset;
+            }
+            else {
+                if (now > this.dirTime2) {
+                    this.gun.angle += 3;
+                }
+                else if (now > this.dirTime1) {
+                    this.gun.angle += 2;
+                }
+                else {
+                    this.gun.angle += 1;
+                }
+            }
+        }
+        else {
+            if (this.lastDir != null) {
+                this.lastDir = null;
+            }
         }
         
-        if (game.time.now > this.primeTime) {
+        if (now > this.primeTime) {
             if (this.cursors.up.isDown) {
                 this.primeSelect('up');
             }
@@ -318,7 +361,7 @@ playState = {
             this.fire();
         }
         
-        if (game.time.now > this.enemyTime &&
+        if (now > this.enemyTime &&
             this.enemiesDispatched < this.enemyTotal) {
             this.dispatchEnemy();
         }
