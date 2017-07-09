@@ -24,8 +24,9 @@ loadState = {
         // Load images
         game.load.image('gun', 'assets/gun-blue.png');
         game.load.image('bullet', 'assets/bullet.png');
-        game.load.image('enemy', 'assets/circle-red.png');
+        // game.load.image('enemy', 'assets/circle-red.png');
         game.load.image('block', 'assets/square-blue.png');
+        game.load.spritesheet('enemy', 'assets/circles.png', 32, 32);
 
         // Load sound effects
         game.load.audio('wheelC4', 'assets/C4.wav');
@@ -207,6 +208,8 @@ playState = {
         // this.enemies.setAll('checkWorldBounds', true);
         this.enemies.setAll('anchor.x', 0.5);
         this.enemies.setAll('anchor.y', 0.5);
+        this.enemies.callAll('animations.add', 'animations', 'shield', [2, 0], 10, false);
+        this.enemies.callAll('animations.add', 'animations', 'hurt', [3, 0], 10, false);
         this.enemiesDispatched = 0;
         this.enemiesKilled = 0;
         this.enemyTime = 0;
@@ -475,7 +478,7 @@ playState = {
      */
     hitEnemy: function(bullet, enemy) {
         'use strict';
-        var prime, factors, soundIdx;
+        var prime, factors;
 
         prime = bullet.prime;
         bullet.kill();
@@ -486,22 +489,15 @@ playState = {
                 this.killEnemy(enemy);
             }
             else {
-                console.log('bounce 1');
-                soundIdx = game.rnd.integerInRange(0,2);
-                this.pings[soundIdx].play();
+                // console.log('bounce 1');
                 this.angerEnemy(enemy);
             }
         }
         else if (factors[prime] != null) {
-            enemy.number /= prime;
-            enemy.text.text = enemy.number;
-            soundIdx = game.rnd.integerInRange(0,2);
-            this.hits[soundIdx].play();
+            this.hurtEnemy(enemy, prime);
         }
         else {
-            console.log('bounce 2');
-            soundIdx = game.rnd.integerInRange(0,2);
-            this.pings[soundIdx].play();
+            // console.log('bounce 2');
             this.angerEnemy(enemy);
         }
     },
@@ -523,12 +519,33 @@ playState = {
         }
     },
     /**
+     * Damage an enemy.
+     * @param enemy
+     */
+    hurtEnemy: function(enemy, prime) {
+        'use strict';
+        var soundIdx;
+
+        soundIdx = game.rnd.integerInRange(0,2);
+        this.hits[soundIdx].play();
+
+        enemy.animations.play('hurt');
+
+        enemy.number /= prime;
+        enemy.text.text = enemy.number;
+    },
+    /**
      * Increase an enemy's velocity due to a bad hit.
      * @param enemy
      */
     angerEnemy: function(enemy) {
         'use strict';
-        var velX, velY;
+        var soundIdx, velX, velY;
+
+        soundIdx = game.rnd.integerInRange(0,2);
+        this.pings[soundIdx].play();
+
+        enemy.animations.play('shield');
 
         velX = enemy.body.velocity.x;
         velX += velX * 0.2;
