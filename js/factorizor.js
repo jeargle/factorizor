@@ -1,4 +1,4 @@
-var score, highScore, level, levels, bootState, loadState, titleState, playState, levelState, endState, game
+let score, highScore, level, levels, bootState, loadState, titleState, playState, levelState, endState, game
 
 highScore = 0
 
@@ -36,7 +36,7 @@ loadScene = {
     },
     preload: function() {
         'use strict'
-        var loadLbl
+        let loadLbl
 
         loadLbl = this.add.text(80, 160, 'loading...',
                                 {font: '30px Courier',
@@ -96,7 +96,7 @@ titleScene = {
     },
     create: function() {
         'use strict'
-        var nameLbl, startLbl
+        let nameLbl, startLbl
 
         nameLbl = this.add.text(80, 160, 'Factorizor',
                                 {font: '50px Courier',
@@ -218,10 +218,10 @@ playScene = {
     // enemyCounts: [5, 5, 5, 5, 10, 10, 10, 10, 10],
     create: function() {
         'use strict'
-        // var block, height, width
+        // let block, height, width
 
 
-        var block, i, j, primeStyle
+        let block, i, j, primeStyle
 
         console.log('[PLAY] create')
 
@@ -450,8 +450,8 @@ playScene = {
     },
     update: function() {
         'use strict'
-        // var enemy, that
-        var now
+        // let enemy, that
+        let now
 
         // console.log('[PLAY] update')
 
@@ -593,7 +593,7 @@ playScene = {
          */
         primeSelect: function(scrollDir) {
             'use strict'
-            var tween, prime, i
+            let tween, prime, i
 
             if (scrollDir === 'down') {
                 this.primeTime = game.time.now +
@@ -668,7 +668,7 @@ playScene = {
          */
         fire: function() {
             'use strict'
-            var bullet, bulletOffset
+            let bullet, bulletOffset
 
             if (game.time.now > this.bulletTime) {
                 this.bulletTime = game.time.now + this.bulletTimeOffset
@@ -692,7 +692,7 @@ playScene = {
          */
         dispatchEnemy: function() {
             'use strict'
-            var enemy, textStyle, enemyIdx, xPos, approachAngle
+            let enemy, textStyle, enemyIdx, xPos, approachAngle
 
             // console.log('dispatchEnemy()')
 
@@ -740,7 +740,7 @@ playScene = {
          */
         hitEnemy: function(bullet, enemy) {
             'use strict'
-            var prime, factors
+            let prime, factors
 
             prime = bullet.prime
             bullet.kill()
@@ -786,7 +786,7 @@ playScene = {
          */
         hurtEnemy: function(enemy, prime) {
             'use strict'
-            var soundIdx
+            let soundIdx
 
             soundIdx = game.rnd.integerInRange(0,2)
             this.hits[soundIdx].play()
@@ -802,7 +802,7 @@ playScene = {
          */
         angerEnemy: function(enemy) {
             'use strict'
-            var soundIdx, velX, velY
+            let soundIdx, velX, velY
 
             soundIdx = game.rnd.integerInRange(0,2)
             this.pings[soundIdx].play()
@@ -851,7 +851,7 @@ playScene = {
         // },
         // createEnemies: function() {
         //     'use strict'
-        //     var i, positions, pos, enemy
+        //     let i, positions, pos, enemy
 
         //     console.log('createEnemies()')
 
@@ -891,7 +891,7 @@ playScene = {
 levelState = {
     create: function() {
         'use strict'
-        var nameLbl, startLbl, wKey
+        let nameLbl, startLbl, wKey
 
         nameLbl = game.add.text(80, 160, 'LEVEL ' + (level+1) + ' COMPLETE',
                                 {font: '50px Courier',
@@ -913,7 +913,7 @@ levelState = {
 endState = {
     create: function() {
         'use strict'
-        var scoreLbl, nameLbl, startLbl, highScoreLbl, wKey
+        let scoreLbl, nameLbl, startLbl, highScoreLbl, wKey
 
         scoreLbl = game.add.text(600, 10, 'Score: ' + score,
                                  {font: '30px Courier',
@@ -950,11 +950,7 @@ endScene = {
     key: 'end',
     create: function() {
         'use strict'
-        var scoreLbl, nameLbl, startLbl
-
-
-
-        var scoreLbl, nameLbl, startLbl, highScoreLbl, wKey
+        let scoreLbl, nameLbl, startLbl
 
         scoreLbl = this.add.text(600, 10, 'Score: ' + score,
                                  {font: '30px Courier',
@@ -977,9 +973,6 @@ endScene = {
                                           fill: '#ffffff'})
             highScore = score
         }
-
-        // wKey = game.input.keyboard.addKey(Phaser.Keyboard.W)
-        // wKey.onDown.addOnce(this.restart, this)
 
         this.input.keyboard.on('keydown_W', this.restart, this)
     },
