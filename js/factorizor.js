@@ -257,14 +257,14 @@ playScene = {
         this.bulletSpeed = 500
 
         this.hits = []
-        // this.hits.push(this.add.audio('hit1'))
-        // this.hits.push(this.add.audio('hit2'))
-        // this.hits.push(this.add.audio('hit3'))
+        this.hits.push(this.sound.add('hit1'))
+        this.hits.push(this.sound.add('hit2'))
+        this.hits.push(this.sound.add('hit3'))
 
         this.pings = []
-        // this.pings.push(this.add.audio('ping1'))
-        // this.pings.push(this.add.audio('ping2'))
-        // this.pings.push(this.add.audio('ping3'))
+        this.pings.push(this.sound.add('ping1'))
+        this.pings.push(this.sound.add('ping2'))
+        this.pings.push(this.sound.add('ping3'))
 
         // Enemies
         // this.enemies = game.add.physicsGroup(Phaser.Physics.ARCADE)
@@ -281,7 +281,7 @@ playScene = {
         this.enemyTime = 0
         this.enemyTimeOffset = 2000
         this.enemySpeed = 20
-        // this.explosion = game.add.audio('explosion')
+        this.explosion = this.sound.add('explosion')
 
         // Set up enemy frequencies based on level info.
         this.levelIdx = level
@@ -322,14 +322,14 @@ playScene = {
         this.primeTimeOffset = 200
 
         this.wheelScale = [
-            // this.add.audio('wheelC4'),
-            // this.add.audio('wheelD4'),
-            // this.add.audio('wheelE4'),
-            // this.add.audio('wheelF4'),
-            // this.add.audio('wheelG4'),
-            // this.add.audio('wheelA4'),
-            // this.add.audio('wheelB4'),
-            // this.add.audio('wheelC5')
+            this.sound.add('wheelC4'),
+            this.sound.add('wheelD4'),
+            this.sound.add('wheelE4'),
+            this.sound.add('wheelF4'),
+            this.sound.add('wheelG4'),
+            this.sound.add('wheelA4'),
+            this.sound.add('wheelB4'),
+            this.sound.add('wheelC5')
         ]
 
         // Blocks
@@ -340,14 +340,6 @@ playScene = {
         block = this.physics.add.sprite(400, 550, 'block')
         // block.anchor.setTo(0.5, 0.5)
 
-        // Controls
-        // this.cursors = game.input.keyboard.addKeys({
-        //     'up': Phaser.Keyboard.W,
-        //     'down': Phaser.Keyboard.S,
-        //     'left': Phaser.Keyboard.A,
-        //     'right': Phaser.Keyboard.D,
-        //     'fire': Phaser.Keyboard.SPACEBAR
-        // })
         // Controls
         this.cursors = this.input.keyboard.addKeys({
             'up': Phaser.Input.Keyboard.KeyCodes.W,
@@ -363,9 +355,6 @@ playScene = {
             {font: '30px Courier',
              fill: '#ffffff'}
         )
-
-
-
 
 
 
@@ -419,34 +408,6 @@ playScene = {
         // this.playerSpeed = 300
 
         // this.physics.add.collider(this.player, this.walls)
-
-        // game.physics.arcade.enable(this.player)
-
-        // Enemies
-        // this.enemies = this.physics.add.group()
-
-        // this.enemiesKilled = 0
-        // this.enemySpeed = 80
-        // this.createEnemies()
-
-        // Woomp
-        // this.woompTime = 0
-        // this.woompTimeOffset = 300
-
-        // Controls
-        // this.cursors = this.input.keyboard.addKeys({
-        //     'up': Phaser.Input.Keyboard.KeyCodes.W,
-        //     'down': Phaser.Input.Keyboard.KeyCodes.S,
-        //     'left': Phaser.Input.Keyboard.KeyCodes.A,
-        //     'right': Phaser.Input.Keyboard.KeyCodes.D,
-        //     'woomp': Phaser.Input.Keyboard.KeyCodes.SPACEBAR
-        // })
-
-        // this.physics.add.collider(this.enemies, this.walls)
-        // this.physics.add.collider(this.enemies, this.enemies)
-        // this.physics.add.overlap(this.player, this.enemies,
-        //                          this.end, null, this)
-
     },
     update: function() {
         'use strict'
@@ -891,7 +852,7 @@ playScene = {
 levelState = {
     create: function() {
         'use strict'
-        let nameLbl, startLbl, wKey
+        let nameLbl, startLbl
 
         nameLbl = game.add.text(80, 160, 'LEVEL ' + (level+1) + ' COMPLETE',
                                 {font: '50px Courier',
@@ -900,8 +861,7 @@ levelState = {
                                  {font: '30px Courier',
                                   fill: '#ffffff'})
 
-        wKey = game.input.keyboard.addKey(Phaser.Keyboard.W)
-        wKey.onDown.addOnce(this.start, this)
+        this.input.keyboard.on('keydown_W', this.start, this)
     },
     start: function() {
         'use strict'
@@ -913,7 +873,7 @@ levelState = {
 endState = {
     create: function() {
         'use strict'
-        let scoreLbl, nameLbl, startLbl, highScoreLbl, wKey
+        let scoreLbl, nameLbl, startLbl, highScoreLbl
 
         scoreLbl = game.add.text(600, 10, 'Score: ' + score,
                                  {font: '30px Courier',
@@ -937,8 +897,7 @@ endState = {
             highScore = score
         }
 
-        wKey = game.input.keyboard.addKey(Phaser.Keyboard.W)
-        wKey.onDown.addOnce(this.restart, this)
+        this.input.keyboard.on('keydown_W', this.restart, this)
     },
     restart: function() {
         'use strict'
