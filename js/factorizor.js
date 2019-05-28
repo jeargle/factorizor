@@ -1,40 +1,36 @@
-let score, highScore, level, levels, bootState, loadState, titleState, playState, levelState, endState, game
+let score, highScore, level, game
 
 highScore = 0
 
 
-bootScene = {
-    key: 'boot',
-    active: true,
-    init: (config) => {
-        console.log('[BOOT] init', config)
-    },
-    preload: () => {
+class BootScene extends Phaser.Scene {
+    constructor() {
+        super('boot')
+    }
+
+    preload() {
         console.log('[BOOT] preload')
-    },
-    create: function() {
+    }
+
+    create() {
         'use strict'
 
         game.scene.start('load')
         game.scene.remove('boot')
-    },
-    update: () => {
+    }
+
+    update() {
         console.log('[BOOT] update')
     }
 }
 
 
-loadScene = {
-    key: 'load',
-    renderToTexture: true,
-    x: 64,
-    y: 64,
-    width: 320,
-    height: 200,
-    init: (config) => {
-        console.log('[LOAD] init', config)
-    },
-    preload: function() {
+class LoadScene extends Phaser.Scene {
+    constructor() {
+        super('load')
+    }
+
+    preload() {
         'use strict'
         let loadLbl
 
@@ -74,27 +70,30 @@ loadScene = {
         this.load.audio('ping1', 'assets/ping1.wav')
         this.load.audio('ping2', 'assets/ping2.wav')
         this.load.audio('ping3', 'assets/ping3.wav')
-    },
-    create: function() {
+    }
+
+    create() {
         'use strict'
         game.scene.start('title')
         game.scene.remove('load')
-    },
-    update: () => {
+    }
+
+    update() {
         console.log('[LOAD] update')
     }
 }
 
 
-titleScene = {
-    key: 'title',
-    init: (config) => {
-        console.log('[TITLE] init', config)
-    },
-    preload: () => {
+class TitleScene extends Phaser.Scene {
+    constructor() {
+        super('title')
+    }
+
+    preload() {
         console.log('[TITLE] preload')
-    },
-    create: function() {
+    }
+
+    create() {
         'use strict'
         let nameLbl, startLbl
 
@@ -106,26 +105,27 @@ titleScene = {
                                   fill: '#ffffff'})
 
         this.input.keyboard.on('keydown_W', this.play, this)
-    },
-    update: () => {
+    }
+
+    update() {
         console.log('[TITLE] update')
-    },
-    extend: {
-        play: function() {
-            'use strict'
-            console.log('[TITLE] play')
-            score = 0
-            level = 0
-            game.scene.switch('title', 'play')
-        }
+    }
+
+    play() {
+        'use strict'
+        console.log('[TITLE] play')
+        score = 0
+        level = 0
+        game.scene.switch('title', 'play')
     }
 }
+
 
 /**
  * Level setup info list.
  * For each level, there's a list of factors with frequency weights.
  */
-levels = [
+const levels = [
     [[2, 1], [3, 1], [5, 1], [7, 1]],
     [[2, 3], [3, 3], [4, 2], [5, 3], [6, 2], [7, 3], [8, 1], [9, 2]],
     [[2, 3], [3, 3], [4, 2], [5, 3], [6, 2], [7, 3], [8, 1], [9, 2], [10, 2],
@@ -162,18 +162,13 @@ levels = [
      [36, 3], [37, 0], [38, 2], [39, 2], [40, 3]]
 ]
 
-playState = {
-    create: function() {
-        'use strict'
-    },
-    update: function() {
-        'use strict'
-    },
-}
 
-playScene = {
-    key: 'play',
-    factors: {
+class PlayScene extends Phaser.Scene {
+    constructor() {
+        super('play')
+    }
+
+    factors = {
         2: null,
         3: null,
         4: {2: 2},
@@ -213,10 +208,11 @@ playScene = {
         38: {2: 1, 19: 1},
         39: {3: 1, 13: 1},
         40: {2: 3, 5: 1}
-    },
+    }
+
     // enemyCounts: [5, 10, 10, 10, 10, 20, 20, 20, 20],
     // enemyCounts: [5, 5, 5, 5, 10, 10, 10, 10, 10],
-    create: function() {
+    create() {
         'use strict'
         // let block, height, width
 
@@ -356,11 +352,6 @@ playScene = {
              fill: '#ffffff'}
         )
 
-
-
-
-
-
         // this.keyboard = game.input.keyboard
 
         // Walls
@@ -408,8 +399,9 @@ playScene = {
         // this.playerSpeed = 300
 
         // this.physics.add.collider(this.player, this.walls)
-    },
-    update: function() {
+    }
+
+    update() {
         'use strict'
         // let enemy, that
         let now
@@ -488,13 +480,6 @@ playScene = {
         this.scoreText.text = 'Score: ' + score
 
 
-
-
-
-
-
-
-
         // Update player.
         this.player.body.setVelocityX(0)
         this.player.body.setVelocityY(0)
@@ -546,311 +531,275 @@ playScene = {
         //     }
         // })
 
-    },
-    extend: {
-        /**
-         * Move prime factor wheel up or down.
-         * @param scrollDir {string} - direction to move: 'up' or 'down'
-         */
-        primeSelect: function(scrollDir) {
-            'use strict'
-            let tween, prime, i
+    }
 
-            if (scrollDir === 'down') {
-                this.primeTime = game.time.now +
-                    this.primeTimeOffset
-                for (i=0; i<4; i++) {
-                    prime = this.wheel[this.tweenPrimes[i]]
-                    tween = game.add.tween(prime)
-                        .to({y: prime.y-25}, 180,
-                            Phaser.Easing.Linear.None,
-                            true)
-                    if (i === 1) {
-                        tween.onComplete.add(function() {
-                            this.fill = '#ffffff'
-                        }, prime)
-                    }
-                    else if (i === 2) {
-                        prime.fill = '#666666'
-                    }
-                }
+    /**
+     * Move prime factor wheel up or down.
+     * @param scrollDir {string} - direction to move: 'up' or 'down'
+     */
+    primeSelect(scrollDir) {
+        'use strict'
+        let tween, prime, i
 
-                for (i=4; i>0; i--) {
-                    this.tweenPrimes[i] = this.tweenPrimes[i-1]
+        if (scrollDir === 'down') {
+            this.primeTime = game.time.now +
+                this.primeTimeOffset
+            for (i=0; i<4; i++) {
+                prime = this.wheel[this.tweenPrimes[i]]
+                tween = game.add.tween(prime)
+                    .to({y: prime.y-25}, 180,
+                        Phaser.Easing.Linear.None,
+                        true)
+                if (i === 1) {
+                    tween.onComplete.add(function() {
+                        this.fill = '#ffffff'
+                    }, prime)
                 }
+                else if (i === 2) {
+                    prime.fill = '#666666'
+                }
+            }
 
-                if (this.tweenPrimes[0] === 0) {
-                    this.tweenPrimes[0] = this.primes.length-1
-                }
-                else {
-                    this.tweenPrimes[0] = this.tweenPrimes[0]-1
-                }
-                this.wheel[this.tweenPrimes[0]].y = 550
+            for (i=4; i>0; i--) {
+                this.tweenPrimes[i] = this.tweenPrimes[i-1]
+            }
+
+            if (this.tweenPrimes[0] === 0) {
+                this.tweenPrimes[0] = this.primes.length-1
             }
             else {
-                this.primeTime = game.time.now +
-                    this.primeTimeOffset
-                for (i=1; i<5; i++) {
-                    prime = this.wheel[this.tweenPrimes[i]]
-                    tween = game.add.tween(prime)
-                        .to({y: prime.y+25}, 180,
-                            Phaser.Easing.Linear.None,
-                            true)
-                    if (i === 3) {
-                        tween.onComplete.add(function() {
-                            this.fill = '#ffffff'
-                        }, prime)
-                    }
-                    else if (i === 2) {
-                        prime.fill = '#666666'
-                    }
+                this.tweenPrimes[0] = this.tweenPrimes[0]-1
+            }
+            this.wheel[this.tweenPrimes[0]].y = 550
+        }
+        else {
+            this.primeTime = game.time.now +
+                this.primeTimeOffset
+            for (i=1; i<5; i++) {
+                prime = this.wheel[this.tweenPrimes[i]]
+                tween = game.add.tween(prime)
+                    .to({y: prime.y+25}, 180,
+                        Phaser.Easing.Linear.None,
+                        true)
+                if (i === 3) {
+                    tween.onComplete.add(function() {
+                        this.fill = '#ffffff'
+                    }, prime)
                 }
-
-                for (i=0; i<4; i++) {
-                    this.tweenPrimes[i] = this.tweenPrimes[i+1]
+                else if (i === 2) {
+                    prime.fill = '#666666'
                 }
-
-                if (this.tweenPrimes[4] === this.primes.length-1) {
-                    this.tweenPrimes[4] = 0
-                }
-                else {
-                    this.tweenPrimes[4] = this.tweenPrimes[4]+1
-                }
-                this.wheel[this.tweenPrimes[4]].y = 450
             }
 
-            this.chosenPrime = this.primes[this.tweenPrimes[2]]
-            this.wheelScale[this.tweenPrimes[2]].play()
-
-            console.log(this.chosenPrime)
-        },
-        /**
-         * Fire the main gun.
-         */
-        fire: function() {
-            'use strict'
-            let bullet, bulletOffset
-
-            if (game.time.now > this.bulletTime) {
-                this.bulletTime = game.time.now + this.bulletTimeOffset
-                bullet = this.bullets.getFirstExists(false)
-
-                if (bullet) {
-                    bullet.prime = this.chosenPrime
-                    bulletOffset = game.physics.arcade.velocityFromAngle(
-                        this.gun.angle, 28
-                    )
-                    bullet.reset(this.gun.x + bulletOffset.x,
-                                 this.gun.y + bulletOffset.y)
-                    game.physics.arcade.velocityFromAngle(
-                        this.gun.angle, this.bulletSpeed, bullet.body.velocity
-                    )
-                }
-            }
-        },
-        /**
-         * Add a single enemy to the screen.
-         */
-        dispatchEnemy: function() {
-            'use strict'
-            let enemy, textStyle, enemyIdx, xPos, approachAngle
-
-            // console.log('dispatchEnemy()')
-
-            enemy = this.enemies.getFirstExists(false)
-
-            textStyle = {
-                font: '20px Arial',
-                fill: '#ffffff',
-                // wordWrap: true,
-                // wordWrapWidth: sprite.width,
-                align: 'center',
-                // backgroundColor: '#ffff00'
+            for (i=0; i<4; i++) {
+                this.tweenPrimes[i] = this.tweenPrimes[i+1]
             }
 
-            if (enemy) {
-                enemy.body.setCircle(16)
-                enemyIdx = game.rnd.integerInRange(0, this.enemyFreqs.length-1)
-                enemy.number = levels[this.levelIdx][this.enemyFreqs[enemyIdx]][0]
-                xPos = game.rnd.integerInRange(1,6)*100
-                enemy.reset(xPos, 30)
-                approachAngle = game.physics.arcade.angleBetween(enemy, this.gun)
-                game.physics.arcade.velocityFromRotation(
-                    approachAngle, this.enemySpeed, enemy.body.velocity
-                )
-                enemy.text = game.add.text(enemy.x, enemy.y + 2,
-                                           enemy.number, textStyle)
-                enemy.text.anchor.set(0.5)
-                game.physics.arcade.enable(enemy.text)
-                game.physics.arcade.velocityFromRotation(
-                    approachAngle, this.enemySpeed, enemy.text.body.velocity
-                )
-                this.enemyTime = game.time.now +
-                    this.enemyTimeOffset +
-                    game.rnd.integerInRange(0,8)*200
-                this.enemiesDispatched++
-            }
-        },
-        /**
-         * Process events after a bullet strikes an enemy.  If the bullet
-         * was fired with a factor of the enemy's number, remove that
-         * factor from the number, otherwise the enemy proceeds without
-         * damage.
-         * @param bullet
-         * @param enemy
-         */
-        hitEnemy: function(bullet, enemy) {
-            'use strict'
-            let prime, factors
-
-            prime = bullet.prime
-            bullet.kill()
-
-            factors = this.factors[enemy.number]
-            if (factors === null) {
-                if (prime === enemy.number) {
-                    this.killEnemy(enemy)
-                }
-                else {
-                    // console.log('bounce 1')
-                    this.angerEnemy(enemy)
-                }
-            }
-            else if (factors[prime] != null) {
-                this.hurtEnemy(enemy, prime)
+            if (this.tweenPrimes[4] === this.primes.length-1) {
+                this.tweenPrimes[4] = 0
             }
             else {
-                // console.log('bounce 2')
-                this.angerEnemy(enemy)
+                this.tweenPrimes[4] = this.tweenPrimes[4]+1
             }
-        },
-        /**
-         * Destroy and remove an enemy from the screen.
-         * @param enemy
-         */
-        killEnemy: function(enemy) {
-            'use strict'
-
-            enemy.text.kill()
-            enemy.kill()
-            this.explosion.play()
-            score += 10
-            this.enemiesKilled++
-
-            if (this.enemiesKilled === this.enemyTotal) {
-                game.state.start('level')
-            }
-        },
-        /**
-         * Damage an enemy.
-         * @param enemy
-         */
-        hurtEnemy: function(enemy, prime) {
-            'use strict'
-            let soundIdx
-
-            soundIdx = game.rnd.integerInRange(0,2)
-            this.hits[soundIdx].play()
-
-            enemy.animations.play('hurt')
-
-            enemy.number /= prime
-            enemy.text.text = enemy.number
-        },
-        /**
-         * Increase an enemy's velocity due to a bad hit.
-         * @param enemy
-         */
-        angerEnemy: function(enemy) {
-            'use strict'
-            let soundIdx, velX, velY
-
-            soundIdx = game.rnd.integerInRange(0,2)
-            this.pings[soundIdx].play()
-
-            enemy.animations.play('shield')
-
-            velX = enemy.body.velocity.x
-            velX += velX * 0.2
-            velY = enemy.body.velocity.y
-            velY += velY * 0.2
-
-            enemy.body.velocity.x = velX
-            enemy.body.velocity.y = velY
-            enemy.text.body.velocity.x = velX
-            enemy.text.body.velocity.y = velY
-        },
-        /**
-         * Move to end screen.
-         */
-        end: function() {
-            'use strict'
-
-            console.log('[PLAY] end')
-
-            this.explosion.play()
-            // game.state.start('end')
-
-            this.scene.restart()
-            game.scene.switch('play', 'end')
-            this.cursors.right.isDown = false
-            this.cursors.left.isDown = false
-            this.cursors.up.isDown = false
-            this.cursors.down.isDown = false
-            console.log('CURSORS OFF')
+            this.wheel[this.tweenPrimes[4]].y = 450
         }
 
+        this.chosenPrime = this.primes[this.tweenPrimes[2]]
+        this.wheelScale[this.tweenPrimes[2]].play()
 
+        console.log(this.chosenPrime)
+    }
 
-        // woomp: function() {
-        //     'use strict'
+    /**
+     * Fire the main gun.
+     */
+    fire() {
+        'use strict'
+        let bullet, bulletOffset
 
-        //     if (game.time.now > this.woompTime) {
-        //         console.log('woomp')
-        //         this.woompTime = game.time.now + this.woompTimeOffset
-        //     }
-        // },
-        // createEnemies: function() {
-        //     'use strict'
-        //     let i, positions, pos, enemy
+        if (game.time.now > this.bulletTime) {
+            this.bulletTime = game.time.now + this.bulletTimeOffset
+            bullet = this.bullets.getFirstExists(false)
 
-        //     console.log('createEnemies()')
+            if (bullet) {
+                bullet.prime = this.chosenPrime
+                bulletOffset = game.physics.arcade.velocityFromAngle(
+                    this.gun.angle, 28
+                )
+                bullet.reset(this.gun.x + bulletOffset.x,
+                             this.gun.y + bulletOffset.y)
+                game.physics.arcade.velocityFromAngle(
+                    this.gun.angle, this.bulletSpeed, bullet.body.velocity
+                )
+            }
+        }
+    }
 
-        //     positions = [
-        //         [50, 50],
-        //         [150, 100],
-        //         [250, 50],
-        //         [350, 100]
-        //     ]
-        //     for (i=0 i<positions.length i++) {
-        //         pos = positions[i]
-        //         enemy = this.enemies.create(pos[0], pos[1], 'enemy')
-        //         // enemy.anchor.setTo(0.5, 0.5)
-        //     }
-        // },
-        // die: function(player, enemy) {
-        //     'use strict'
+    /**
+     * Add a single enemy to the screen.
+     */
+    dispatchEnemy() {
+        'use strict'
+        let enemy, textStyle, enemyIdx, xPos, approachAngle
 
-        //     console.log('die')
+        // console.log('dispatchEnemy()')
 
-        //     this.end()
-        // },
-        // end: function() {
-        //     'use strict'
-        //     console.log('[PLAY] end')
-        //     this.scene.restart()
-        //     game.scene.switch('play', 'end')
-        //     this.cursors.right.isDown = false
-        //     this.cursors.left.isDown = false
-        //     this.cursors.up.isDown = false
-        //     this.cursors.down.isDown = false
-        //     console.log('CURSORS OFF')
-        // }
+        enemy = this.enemies.getFirstExists(false)
+
+        textStyle = {
+            font: '20px Arial',
+            fill: '#ffffff',
+            // wordWrap: true,
+            // wordWrapWidth: sprite.width,
+            align: 'center',
+            // backgroundColor: '#ffff00'
+        }
+
+        if (enemy) {
+            enemy.body.setCircle(16)
+            enemyIdx = game.rnd.integerInRange(0, this.enemyFreqs.length-1)
+            enemy.number = levels[this.levelIdx][this.enemyFreqs[enemyIdx]][0]
+            xPos = game.rnd.integerInRange(1,6)*100
+            enemy.reset(xPos, 30)
+            approachAngle = game.physics.arcade.angleBetween(enemy, this.gun)
+            game.physics.arcade.velocityFromRotation(
+                approachAngle, this.enemySpeed, enemy.body.velocity
+            )
+            enemy.text = game.add.text(enemy.x, enemy.y + 2,
+                                       enemy.number, textStyle)
+            enemy.text.anchor.set(0.5)
+            game.physics.arcade.enable(enemy.text)
+            game.physics.arcade.velocityFromRotation(
+                approachAngle, this.enemySpeed, enemy.text.body.velocity
+            )
+            this.enemyTime = game.time.now +
+                this.enemyTimeOffset +
+                game.rnd.integerInRange(0,8)*200
+            this.enemiesDispatched++
+        }
+    }
+
+    /**
+     * Process events after a bullet strikes an enemy.  If the bullet
+     * was fired with a factor of the enemy's number, remove that
+     * factor from the number, otherwise the enemy proceeds without
+     * damage.
+     * @param bullet
+     * @param enemy
+     */
+    hitEnemy(bullet, enemy) {
+        'use strict'
+        let prime, factors
+
+        prime = bullet.prime
+        bullet.kill()
+
+        factors = this.factors[enemy.number]
+        if (factors === null) {
+            if (prime === enemy.number) {
+                this.killEnemy(enemy)
+            }
+            else {
+                // console.log('bounce 1')
+                this.angerEnemy(enemy)
+            }
+        }
+        else if (factors[prime] != null) {
+            this.hurtEnemy(enemy, prime)
+        }
+        else {
+            // console.log('bounce 2')
+            this.angerEnemy(enemy)
+        }
+    }
+
+    /**
+     * Destroy and remove an enemy from the screen.
+     * @param enemy
+     */
+    killEnemy(enemy) {
+        'use strict'
+
+        enemy.text.kill()
+        enemy.kill()
+        this.explosion.play()
+        score += 10
+        this.enemiesKilled++
+
+        if (this.enemiesKilled === this.enemyTotal) {
+            game.state.start('level')
+        }
+    }
+
+    /**
+     * Damage an enemy.
+     * @param enemy
+     */
+    hurtEnemy(enemy, prime) {
+        'use strict'
+        let soundIdx
+
+        soundIdx = game.rnd.integerInRange(0,2)
+        this.hits[soundIdx].play()
+
+        enemy.animations.play('hurt')
+
+        enemy.number /= prime
+        enemy.text.text = enemy.number
+    }
+
+    /**
+     * Increase an enemy's velocity due to a bad hit.
+     * @param enemy
+     */
+    angerEnemy(enemy) {
+        'use strict'
+        let soundIdx, velX, velY
+
+        soundIdx = game.rnd.integerInRange(0,2)
+        this.pings[soundIdx].play()
+
+        enemy.animations.play('shield')
+
+        velX = enemy.body.velocity.x
+        velX += velX * 0.2
+        velY = enemy.body.velocity.y
+        velY += velY * 0.2
+
+        enemy.body.velocity.x = velX
+        enemy.body.velocity.y = velY
+        enemy.text.body.velocity.x = velX
+        enemy.text.body.velocity.y = velY
+    }
+
+    /**
+     * Move to end screen.
+     */
+    end() {
+        'use strict'
+
+        console.log('[PLAY] end')
+
+        this.explosion.play()
+        // game.state.start('end')
+
+        this.scene.restart()
+        game.scene.switch('play', 'end')
+        this.cursors.right.isDown = false
+        this.cursors.left.isDown = false
+        this.cursors.up.isDown = false
+        this.cursors.down.isDown = false
+        console.log('CURSORS OFF')
     }
 }
 
-levelState = {
-    create: function() {
+
+class LevelScene extends Phaser.Scene {
+    constructor() {
+        super('level')
+    }
+
+    create() {
         'use strict'
         let nameLbl, startLbl
 
@@ -862,52 +811,22 @@ levelState = {
                                   fill: '#ffffff'})
 
         this.input.keyboard.on('keydown_W', this.start, this)
-    },
-    start: function() {
+    }
+
+    start() {
         'use strict'
         level += 1
         game.state.start('play')
     }
 }
 
-endState = {
-    create: function() {
-        'use strict'
-        let scoreLbl, nameLbl, startLbl, highScoreLbl
 
-        scoreLbl = game.add.text(600, 10, 'Score: ' + score,
-                                 {font: '30px Courier',
-                                  fill: '#ffffff'})
-        nameLbl = game.add.text(80, 160, 'YOU DIED',
-                                {font: '50px Courier',
-                                 fill: '#ffffff'})
-        startLbl = game.add.text(80, 240, 'press "W" to restart',
-                                 {font: '30px Courier',
-                                  fill: '#ffffff'})
-
-        if (score <= highScore) {
-            highScoreLbl = game.add.text(510, 50, 'High Score: ' + highScore,
-                                         {font: '30px Courier',
-                                          fill: '#ffffff'})
-        }
-        else {
-            highScoreLbl = game.add.text(300, 50, 'New High Score!',
-                                         {font: '30px Courier',
-                                          fill: '#ffffff'})
-            highScore = score
-        }
-
-        this.input.keyboard.on('keydown_W', this.restart, this)
-    },
-    restart: function() {
-        'use strict'
-        game.state.start('title')
+class EndScene extends Phaser.Scene {
+    constructor() {
+        super('end')
     }
-}
 
-endScene = {
-    key: 'end',
-    create: function() {
+    create() {
         'use strict'
         let scoreLbl, nameLbl, startLbl
 
@@ -934,12 +853,11 @@ endScene = {
         }
 
         this.input.keyboard.on('keydown_W', this.restart, this)
-    },
-    extend: {
-        restart: function() {
-            'use strict'
-            game.scene.switch('end', 'title')
-        }
+    }
+
+    restart() {
+        'use strict'
+        game.scene.switch('end', 'title')
     }
 }
 
@@ -953,15 +871,16 @@ const gameConfig = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: false
+            debug: true
         }
     },
     scene: [
-        bootScene,
-        loadScene,
-        titleScene,
-        playScene,
-        endScene
+        BootScene,
+        LoadScene,
+        TitleScene,
+        PlayScene,
+        LevelScene,
+        EndScene
     ]
 }
 
