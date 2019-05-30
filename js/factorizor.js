@@ -13,8 +13,6 @@ class BootScene extends Phaser.Scene {
     }
 
     create() {
-        'use strict'
-
         game.scene.start('load')
         game.scene.remove('boot')
     }
@@ -31,7 +29,6 @@ class LoadScene extends Phaser.Scene {
     }
 
     preload() {
-        'use strict'
         let loadLbl
 
         loadLbl = this.add.text(80, 160, 'loading...',
@@ -73,7 +70,6 @@ class LoadScene extends Phaser.Scene {
     }
 
     create() {
-        'use strict'
         game.scene.start('title')
         game.scene.remove('load')
     }
@@ -94,7 +90,6 @@ class TitleScene extends Phaser.Scene {
     }
 
     create() {
-        'use strict'
         let nameLbl, startLbl
 
         nameLbl = this.add.text(80, 160, 'Factorizor',
@@ -112,7 +107,6 @@ class TitleScene extends Phaser.Scene {
     }
 
     play() {
-        'use strict'
         console.log('[TITLE] play')
         score = 0
         level = 0
@@ -162,68 +156,62 @@ const levels = [
      [36, 3], [37, 0], [38, 2], [39, 2], [40, 3]]
 ]
 
+const factors = {
+    2: null,
+    3: null,
+    4: {2: 2},
+    5: null,
+    6: {2: 1, 3: 1},
+    7: null,
+    8: {2: 3},
+    9: {3: 2},
+    10: {2: 1, 5: 1},
+    11: null,
+    12: {2: 2, 3: 1},
+    13: null,
+    14: {2: 1, 7: 1},
+    15: {3: 1, 5: 1},
+    16: {2: 4},
+    17: null,
+    18: {2: 1, 3: 2},
+    19: null,
+    20: {2: 2, 5: 1},
+    21: {3: 1, 7: 1},
+    22: {2: 1, 11: 1},
+    23: null,
+    24: {2: 3, 3: 1},
+    25: {5: 2},
+    26: {2: 1, 13: 1},
+    27: {3: 3},
+    28: {2: 2, 7: 1},
+    29: null,
+    30: {2: 1, 3: 1, 5: 1},
+    31: null,
+    32: {2: 5},
+    33: {3: 1, 11: 1},
+    34: {2: 1, 17: 1},
+    35: {5: 1, 7: 1},
+    36: {2: 2, 3: 2},
+    37: null,
+    38: {2: 1, 19: 1},
+    39: {3: 1, 13: 1},
+    40: {2: 3, 5: 1}
+}
+
 
 class PlayScene extends Phaser.Scene {
     constructor() {
         super('play')
     }
 
-    factors = {
-        2: null,
-        3: null,
-        4: {2: 2},
-        5: null,
-        6: {2: 1, 3: 1},
-        7: null,
-        8: {2: 3},
-        9: {3: 2},
-        10: {2: 1, 5: 1},
-        11: null,
-        12: {2: 2, 3: 1},
-        13: null,
-        14: {2: 1, 7: 1},
-        15: {3: 1, 5: 1},
-        16: {2: 4},
-        17: null,
-        18: {2: 1, 3: 2},
-        19: null,
-        20: {2: 2, 5: 1},
-        21: {3: 1, 7: 1},
-        22: {2: 1, 11: 1},
-        23: null,
-        24: {2: 3, 3: 1},
-        25: {5: 2},
-        26: {2: 1, 13: 1},
-        27: {3: 3},
-        28: {2: 2, 7: 1},
-        29: null,
-        30: {2: 1, 3: 1, 5: 1},
-        31: null,
-        32: {2: 5},
-        33: {3: 1, 11: 1},
-        34: {2: 1, 17: 1},
-        35: {5: 1, 7: 1},
-        36: {2: 2, 3: 2},
-        37: null,
-        38: {2: 1, 19: 1},
-        39: {3: 1, 13: 1},
-        40: {2: 3, 5: 1}
-    }
-
     // enemyCounts: [5, 10, 10, 10, 10, 20, 20, 20, 20],
     // enemyCounts: [5, 5, 5, 5, 10, 10, 10, 10, 10],
     create() {
-        'use strict'
         // let block, height, width
-
-
         let block, i, j, primeStyle
+        let that = this
 
         console.log('[PLAY] create')
-
-        // this.keyboard = game.input.keyboard
-
-        // game.physics.startSystem(Phaser.Physics.ARCADE)
 
         this.lastDir = null
         this.dirTime1 = 0
@@ -232,21 +220,23 @@ class PlayScene extends Phaser.Scene {
         this.dirTime2Offset = 500
 
         // Gun
-        // this.gun = game.add.sprite(400, 400, 'gun')
         this.gun = this.physics.add.sprite(400, 400, 'gun')
-        // this.gun.anchor.setTo(0.5, 0.5)
-        // game.physics.arcade.enable(this.gun)
         this.gun.body.setCircle(28)
         this.gun.angle -= 90
 
         // Bullets
-        // this.bullets = game.add.physicsGroup(Phaser.Physics.ARCADE)
-        this.bullets = this.physics.add.group()
-        this.bullets.createMultiple(30, 'bullet')
-        // this.bullets.setAll('anchor.x', 0.5)
-        // this.bullets.setAll('anchor.y', 0.5)
-        // this.bullets.setAll('outOfBoundsKill', true)
-        // this.bullets.setAll('checkWorldBounds', true)
+        this.sound.add('fire1')
+        this.sound.add('fire2')
+        this.bullets = this.physics.add.group(
+            key: 'bullet',
+            active: false,
+            repeat: 30,
+            setXY: { x: 0, y: -200},
+        )
+        this.bullets.children.iterate(function(bullet) {
+            that.bullets.killAndHide(bullet)
+            bullet.body.onWorldBounds = true
+        })
 
         this.bulletTime = 0
         this.bulletTimeOffset = 200
@@ -263,7 +253,6 @@ class PlayScene extends Phaser.Scene {
         this.pings.push(this.sound.add('ping3'))
 
         // Enemies
-        // this.enemies = game.add.physicsGroup(Phaser.Physics.ARCADE)
         this.enemies = this.physics.add.group()
         this.enemies.createMultiple(30, 'enemy')
         // this.enemies.setAll('outOfBoundsKill', true)
@@ -402,7 +391,6 @@ class PlayScene extends Phaser.Scene {
     }
 
     update() {
-        'use strict'
         // let enemy, that
         let now
 
@@ -538,7 +526,6 @@ class PlayScene extends Phaser.Scene {
      * @param scrollDir {string} - direction to move: 'up' or 'down'
      */
     primeSelect(scrollDir) {
-        'use strict'
         let tween, prime, i
 
         if (scrollDir === 'down') {
@@ -614,7 +601,6 @@ class PlayScene extends Phaser.Scene {
      * Fire the main gun.
      */
     fire() {
-        'use strict'
         let bullet, bulletOffset
 
         if (game.time.now > this.bulletTime) {
@@ -639,7 +625,6 @@ class PlayScene extends Phaser.Scene {
      * Add a single enemy to the screen.
      */
     dispatchEnemy() {
-        'use strict'
         let enemy, textStyle, enemyIdx, xPos, approachAngle
 
         // console.log('dispatchEnemy()')
@@ -688,14 +673,12 @@ class PlayScene extends Phaser.Scene {
      * @param enemy
      */
     hitEnemy(bullet, enemy) {
-        'use strict'
-        let prime, factors
+        let prime
 
         prime = bullet.prime
         bullet.kill()
 
-        factors = this.factors[enemy.number]
-        if (factors === null) {
+        if (factors[enemy.number] === null) {
             if (prime === enemy.number) {
                 this.killEnemy(enemy)
             }
@@ -704,7 +687,7 @@ class PlayScene extends Phaser.Scene {
                 this.angerEnemy(enemy)
             }
         }
-        else if (factors[prime] != null) {
+        else if (factors[enemy.number][prime] != null) {
             this.hurtEnemy(enemy, prime)
         }
         else {
@@ -718,8 +701,6 @@ class PlayScene extends Phaser.Scene {
      * @param enemy
      */
     killEnemy(enemy) {
-        'use strict'
-
         enemy.text.kill()
         enemy.kill()
         this.explosion.play()
@@ -736,7 +717,6 @@ class PlayScene extends Phaser.Scene {
      * @param enemy
      */
     hurtEnemy(enemy, prime) {
-        'use strict'
         let soundIdx
 
         soundIdx = game.rnd.integerInRange(0,2)
@@ -753,7 +733,6 @@ class PlayScene extends Phaser.Scene {
      * @param enemy
      */
     angerEnemy(enemy) {
-        'use strict'
         let soundIdx, velX, velY
 
         soundIdx = game.rnd.integerInRange(0,2)
@@ -776,8 +755,6 @@ class PlayScene extends Phaser.Scene {
      * Move to end screen.
      */
     end() {
-        'use strict'
-
         console.log('[PLAY] end')
 
         this.explosion.play()
@@ -800,7 +777,6 @@ class LevelScene extends Phaser.Scene {
     }
 
     create() {
-        'use strict'
         let nameLbl, startLbl
 
         nameLbl = game.add.text(80, 160, 'LEVEL ' + (level+1) + ' COMPLETE',
@@ -814,7 +790,6 @@ class LevelScene extends Phaser.Scene {
     }
 
     start() {
-        'use strict'
         level += 1
         game.state.start('play')
     }
@@ -827,7 +802,6 @@ class EndScene extends Phaser.Scene {
     }
 
     create() {
-        'use strict'
         let scoreLbl, nameLbl, startLbl
 
         scoreLbl = this.add.text(600, 10, 'Score: ' + score,
@@ -856,7 +830,6 @@ class EndScene extends Phaser.Scene {
     }
 
     restart() {
-        'use strict'
         game.scene.switch('end', 'title')
     }
 }
