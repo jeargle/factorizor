@@ -227,12 +227,12 @@ class PlayScene extends Phaser.Scene {
         // Bullets
         this.sound.add('fire1')
         this.sound.add('fire2')
-        this.bullets = this.physics.add.group(
+        this.bullets = this.physics.add.group({
             key: 'bullet',
             active: false,
             repeat: 30,
             setXY: { x: 0, y: -200},
-        )
+        })
         this.bullets.children.iterate(function(bullet) {
             that.bullets.killAndHide(bullet)
             bullet.body.onWorldBounds = true
@@ -253,8 +253,16 @@ class PlayScene extends Phaser.Scene {
         this.pings.push(this.sound.add('ping3'))
 
         // Enemies
-        this.enemies = this.physics.add.group()
-        this.enemies.createMultiple(30, 'enemy')
+        this.enemies = this.physics.add.group({
+            key: 'enemy',
+            active: false,
+            repeat: 30,
+            setXY: { x: 0, y: -300},
+        })
+        this.enemies.children.iterate(function(enemy) {
+            that.enemies.killAndHide(enemy)
+            // enemy.body.onWorldBounds = true
+        })
         // this.enemies.setAll('outOfBoundsKill', true)
         // this.enemies.setAll('checkWorldBounds', true)
         // this.enemies.setAll('anchor.x', 0.5)
@@ -340,58 +348,9 @@ class PlayScene extends Phaser.Scene {
             {font: '30px Courier',
              fill: '#ffffff'}
         )
-
-        // this.keyboard = game.input.keyboard
-
-        // Walls
-        // this.walls = this.physics.add.staticGroup()
-
-
-        // console.log(this.height)
-        // console.log(this.game.height)
-        // height = 600
-        // width = 800
-        // block = this.walls.create(0, height - 32, 'platform')
-        //     .setOrigin(0, 0)
-        //     .setScale(25, 1)
-        //     .refreshBody()
-
-        // block = this.walls.create(0, 0, 'platform')
-        //     .setOrigin(0, 0)
-        //     .setScale(25, 1)
-        //     .refreshBody()
-
-        // block = this.walls.create(0, 32, 'platform')
-        //     .setOrigin(0, 0)
-        //     .setScale(1, 17)
-        //     .refreshBody()
-
-        // block = this.walls.create(width - 32, 32, 'platform')
-        //     .setOrigin(0, 0)
-        //     .setScale(1, 17)
-        //     .refreshBody()
-
-        // block = this.walls.create(200, 200, 'platform')
-        //     .setOrigin(0, 0)
-        //     .setScale(8, 1)
-        //     .refreshBody()
-
-        // block = this.walls.create(400, 400, 'platform')
-        //     .setOrigin(0, 0)
-        //     .setScale(8, 1)
-        //     .refreshBody()
-
-        // Player
-        // this.player = this.physics.add.sprite(150, 150, 'player')
-        // this.player.setBounce(0.2)
-        // this.player.setCollideWorldBounds(true)
-        // this.playerSpeed = 300
-
-        // this.physics.add.collider(this.player, this.walls)
     }
 
     update() {
-        // let enemy, that
         let now
 
         // console.log('[PLAY] update')
@@ -466,59 +425,6 @@ class PlayScene extends Phaser.Scene {
         }
 
         this.scoreText.text = 'Score: ' + score
-
-
-        // Update player.
-        this.player.body.setVelocityX(0)
-        this.player.body.setVelocityY(0)
-        if (this.cursors.right.isDown) {
-            console.log('RIGHT')
-            this.player.body.setVelocityX(this.playerSpeed)
-        }
-        else if (this.cursors.left.isDown) {
-            console.log('LEFT')
-            this.player.body.setVelocityX(-this.playerSpeed)
-        }
-        else if (this.cursors.up.isDown) {
-            console.log('UP')
-            this.player.body.setVelocityY(-this.playerSpeed)
-        }
-        else if (this.cursors.down.isDown) {
-            console.log('DOWN')
-            this.player.body.setVelocityY(this.playerSpeed)
-        }
-
-        if (this.cursors.woomp.isDown) {
-            this.woomp()
-        }
-
-        // Update enemies.
-        // Also could use this.enemies.children (array of objects).
-        that = this
-        // this.enemies.forEach(function(enemy) {
-        //     if ((Math.abs(enemy.body.velocity.x) < that.enemySpeed &&
-        //          Math.abs(enemy.body.velocity.y) < that.enemySpeed) ||
-        //         game.time.now > enemy.moveTime) {
-        //         enemy.body.velocity.x = 0
-        //         enemy.body.velocity.y = 0
-        //         switch(game.rnd.integerInRange(0, 3)) {
-        //         case 0:
-        //             enemy.body.velocity.x = that.enemySpeed
-        //             break
-        //         case 1:
-        //             enemy.body.velocity.y = that.enemySpeed
-        //             break
-        //         case 2:
-        //             enemy.body.velocity.x = -that.enemySpeed
-        //             break
-        //         case 3:
-        //             enemy.body.velocity.y = -that.enemySpeed
-        //             break
-        //         }
-        //         enemy.moveTime = game.time.now + game.rnd.integerInRange(5, 10)*200
-        //     }
-        // })
-
     }
 
     /**
@@ -605,15 +511,20 @@ class PlayScene extends Phaser.Scene {
 
         if (game.time.now > this.bulletTime) {
             this.bulletTime = game.time.now + this.bulletTimeOffset
-            bullet = this.bullets.getFirstExists(false)
+            bullet = this.bullets.getFirstDead(false)
 
             if (bullet) {
+                bullet.active = true
+                bullet.visible = true
+                bullet.body.collideWorldBounds = true
                 bullet.prime = this.chosenPrime
                 bulletOffset = game.physics.arcade.velocityFromAngle(
                     this.gun.angle, 28
                 )
-                bullet.reset(this.gun.x + bulletOffset.x,
-                             this.gun.y + bulletOffset.y)
+                // bullet.reset(this.gun.x + bulletOffset.x,
+                //              this.gun.y + bulletOffset.y)
+                bullet.setPosition(this.gun.x + bulletOffset.x,
+                                   this.gun.y + bulletOffset.y)
                 game.physics.arcade.velocityFromAngle(
                     this.gun.angle, this.bulletSpeed, bullet.body.velocity
                 )
@@ -629,7 +540,7 @@ class PlayScene extends Phaser.Scene {
 
         // console.log('dispatchEnemy()')
 
-        enemy = this.enemies.getFirstExists(false)
+        enemy = this.enemies.getFirstDead(false)
 
         textStyle = {
             font: '20px Arial',
@@ -641,11 +552,16 @@ class PlayScene extends Phaser.Scene {
         }
 
         if (enemy) {
+            enemy.active = true
+            enemy.visible = true
             enemy.body.setCircle(16)
-            enemyIdx = game.rnd.integerInRange(0, this.enemyFreqs.length-1)
+            // enemyIdx = game.rnd.integerInRange(0, this.enemyFreqs.length-1)
+            enemyIdx = Phaser.Math.Between(0, this.enemyFreqs.length-1)
             enemy.number = levels[this.levelIdx][this.enemyFreqs[enemyIdx]][0]
-            xPos = game.rnd.integerInRange(1,6)*100
-            enemy.reset(xPos, 30)
+            // xPos = game.rnd.integerInRange(1,6)*100
+            xPos = Phaser.Math.Between(1, 6)*100
+            // enemy.reset(xPos, 30)
+            enemy.setPosition(xPos, 30)
             approachAngle = game.physics.arcade.angleBetween(enemy, this.gun)
             game.physics.arcade.velocityFromRotation(
                 approachAngle, this.enemySpeed, enemy.body.velocity
@@ -659,7 +575,8 @@ class PlayScene extends Phaser.Scene {
             )
             this.enemyTime = game.time.now +
                 this.enemyTimeOffset +
-                game.rnd.integerInRange(0,8)*200
+                Phaser.Math.Between(0, 8)*200
+                // game.rnd.integerInRange(0,8)*200
             this.enemiesDispatched++
         }
     }
@@ -719,7 +636,8 @@ class PlayScene extends Phaser.Scene {
     hurtEnemy(enemy, prime) {
         let soundIdx
 
-        soundIdx = game.rnd.integerInRange(0,2)
+        // soundIdx = game.rnd.integerInRange(0,2)
+        soundIdx = Phaser.Math.Between(0, 2)
         this.hits[soundIdx].play()
 
         enemy.animations.play('hurt')
@@ -735,7 +653,8 @@ class PlayScene extends Phaser.Scene {
     angerEnemy(enemy) {
         let soundIdx, velX, velY
 
-        soundIdx = game.rnd.integerInRange(0,2)
+        // soundIdx = game.rnd.integerInRange(0,2)
+        soundIdx = Phaser.Math.Between(0, 2)
         this.pings[soundIdx].play()
 
         enemy.animations.play('shield')
