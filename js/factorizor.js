@@ -435,7 +435,7 @@ class PlayScene extends Phaser.Scene {
         let tween, prime, i
 
         if (scrollDir === 'down') {
-            this.primeTime = game.time.now +
+            this.primeTime = this.time.now +
                 this.primeTimeOffset
             for (i=0; i<4; i++) {
                 prime = this.wheel[this.tweenPrimes[i]]
@@ -466,7 +466,7 @@ class PlayScene extends Phaser.Scene {
             this.wheel[this.tweenPrimes[0]].y = 550
         }
         else {
-            this.primeTime = game.time.now +
+            this.primeTime = this.time.now +
                 this.primeTimeOffset
             for (i=1; i<5; i++) {
                 prime = this.wheel[this.tweenPrimes[i]]
@@ -509,8 +509,8 @@ class PlayScene extends Phaser.Scene {
     fire() {
         let bullet, bulletOffset
 
-        if (game.time.now > this.bulletTime) {
-            this.bulletTime = game.time.now + this.bulletTimeOffset
+        if (this.time.now > this.bulletTime) {
+            this.bulletTime = this.time.now + this.bulletTimeOffset
             bullet = this.bullets.getFirstDead(false)
 
             if (bullet) {
@@ -562,18 +562,23 @@ class PlayScene extends Phaser.Scene {
             xPos = Phaser.Math.Between(1, 6)*100
             // enemy.reset(xPos, 30)
             enemy.setPosition(xPos, 30)
-            approachAngle = game.physics.arcade.angleBetween(enemy, this.gun)
-            game.physics.arcade.velocityFromRotation(
+            // approachAngle = game.physics.arcade.angleBetween(enemy, this.gun)
+            // approachAngle = this.physics.angleBetween(enemy, this.gun)
+            approachAngle = Phaser.Math.Angle.BetweenPoints(enemy.x, enemy.y, this.gun.x, this.gun.y)
+            // game.physics.arcade.velocityFromRotation(
+            //     approachAngle, this.enemySpeed, enemy.body.velocity
+            // )
+            this.physics.velocityFromRotation(
                 approachAngle, this.enemySpeed, enemy.body.velocity
             )
-            enemy.text = game.add.text(enemy.x, enemy.y + 2,
+            enemy.text = this.add.text(enemy.x, enemy.y + 2,
                                        enemy.number, textStyle)
-            enemy.text.anchor.set(0.5)
-            game.physics.arcade.enable(enemy.text)
-            game.physics.arcade.velocityFromRotation(
+            // enemy.text.anchor.set(0.5)
+            this.physics.world.enable(enemy.text)
+            this.physics.velocityFromRotation(
                 approachAngle, this.enemySpeed, enemy.text.body.velocity
             )
-            this.enemyTime = game.time.now +
+            this.enemyTime = this.time.now +
                 this.enemyTimeOffset +
                 Phaser.Math.Between(0, 8)*200
                 // game.rnd.integerInRange(0,8)*200
@@ -698,10 +703,10 @@ class LevelScene extends Phaser.Scene {
     create() {
         let nameLbl, startLbl
 
-        nameLbl = game.add.text(80, 160, 'LEVEL ' + (level+1) + ' COMPLETE',
+        nameLbl = this.add.text(80, 160, 'LEVEL ' + (level+1) + ' COMPLETE',
                                 {font: '50px Courier',
                                  fill: '#ffffff'})
-        startLbl = game.add.text(80, 240, 'press "W" to start next level',
+        startLbl = this.add.text(80, 240, 'press "W" to start next level',
                                  {font: '30px Courier',
                                   fill: '#ffffff'})
 
