@@ -207,7 +207,6 @@ class PlayScene extends Phaser.Scene {
     // enemyCounts: [5, 10, 10, 10, 10, 20, 20, 20, 20],
     // enemyCounts: [5, 5, 5, 5, 10, 10, 10, 10, 10],
     create() {
-        // let block, height, width
         let block, i, j, primeStyle
         let that = this
 
@@ -225,8 +224,6 @@ class PlayScene extends Phaser.Scene {
         this.gun.angle -= 90
 
         // Bullets
-        this.sound.add('fire1')
-        this.sound.add('fire2')
         this.bullets = this.physics.add.group({
             key: 'bullet',
             active: false,
@@ -326,12 +323,8 @@ class PlayScene extends Phaser.Scene {
         ]
 
         // Blocks
-        // block = game.add.sprite(400, 443, 'block')
         block = this.physics.add.sprite(400, 443, 'block')
-        // block.anchor.setTo(0.5, 0.5)
-        // block = game.add.sprite(400, 550, 'block')
         block = this.physics.add.sprite(400, 550, 'block')
-        // block.anchor.setTo(0.5, 0.5)
 
         // Controls
         this.cursors = this.input.keyboard.addKeys({
@@ -439,14 +432,24 @@ class PlayScene extends Phaser.Scene {
                 this.primeTimeOffset
             for (i=0; i<4; i++) {
                 prime = this.wheel[this.tweenPrimes[i]]
-                tween = game.add.tween(prime)
-                    .to({y: prime.y-25}, 180,
-                        Phaser.Easing.Linear.None,
-                        true)
+                // tween = game.add.tween(prime)
+                //     .to({y: prime.y-25}, 180,
+                //         Phaser.Easing.Linear.None,
+                //         true)
+                tween = this.tweens.add({
+                    targets: prime,
+                    y: prime.y - 25,         // '+=100'
+                    ease: 'Linear',          // 'Cubic', 'Elastic', 'Bounce', 'Back'
+                    duration: 180
+                    // repeat: -1,              // -1: infinity
+                    // yoyo: true
+                })
+
                 if (i === 1) {
-                    tween.onComplete.add(function() {
+                    tween.onComplete = function() {
                         this.fill = '#ffffff'
-                    }, prime)
+                    }
+                    tween.onCompleteScope = prime
                 }
                 else if (i === 2) {
                     prime.fill = '#666666'
@@ -470,14 +473,25 @@ class PlayScene extends Phaser.Scene {
                 this.primeTimeOffset
             for (i=1; i<5; i++) {
                 prime = this.wheel[this.tweenPrimes[i]]
-                tween = game.add.tween(prime)
-                    .to({y: prime.y+25}, 180,
-                        Phaser.Easing.Linear.None,
-                        true)
+                // tween = game.add.tween(prime)
+                //     .to({y: prime.y+25}, 180,
+                //         Phaser.Easing.Linear.None,
+                //         true)
+
+                tween = this.tweens.add({
+                    targets: prime,
+                    y: prime.y + 25,            // '+=100'
+                    ease: 'Linear',          // 'Cubic', 'Elastic', 'Bounce', 'Back'
+                    duration: 180
+                    // repeat: -1,              // -1: infinity
+                    // yoyo: true
+                })
+
                 if (i === 3) {
-                    tween.onComplete.add(function() {
+                    tween.onComplete = function() {
                         this.fill = '#ffffff'
-                    }, prime)
+                    }
+                    tween.onCompleteScope = prime
                 }
                 else if (i === 2) {
                     prime.fill = '#666666'
