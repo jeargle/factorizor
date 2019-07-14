@@ -554,15 +554,13 @@ class PlayScene extends Phaser.Scene {
     dispatchEnemy() {
         let enemy, textStyle, enemyIdx, xPos, approachAngle
 
-        // console.log('dispatchEnemy()')
+        console.log('dispatchEnemy()')
 
         enemy = this.enemies.getFirstDead(false)
 
         textStyle = {
             font: '20px Arial',
             fill: '#ffffff',
-            // wordWrap: true,
-            // wordWrapWidth: sprite.width,
             align: 'center',
             // backgroundColor: '#ffff00'
         }
@@ -571,25 +569,18 @@ class PlayScene extends Phaser.Scene {
             enemy.active = true
             enemy.visible = true
             enemy.body.setCircle(16)
-            // enemyIdx = game.rnd.integerInRange(0, this.enemyFreqs.length-1)
             enemyIdx = Phaser.Math.Between(0, this.enemyFreqs.length-1)
             enemy.number = levels[this.levelIdx][this.enemyFreqs[enemyIdx]][0]
-            // xPos = game.rnd.integerInRange(1,6)*100
             xPos = Phaser.Math.Between(1, 6)*100
-            // enemy.reset(xPos, 30)
             enemy.setPosition(xPos, 30)
-            // approachAngle = game.physics.arcade.angleBetween(enemy, this.gun)
-            // approachAngle = this.physics.angleBetween(enemy, this.gun)
-            approachAngle = Phaser.Math.Angle.BetweenPoints(enemy.x, enemy.y, this.gun.x, this.gun.y)
-            // game.physics.arcade.velocityFromRotation(
-            //     approachAngle, this.enemySpeed, enemy.body.velocity
-            // )
-            this.physics.velocityFromRotation(
+            approachAngle = Phaser.Math.Angle.Between(enemy.x, enemy.y, this.gun.x, this.gun.y)
+            let vel = this.physics.velocityFromRotation(
                 approachAngle, this.enemySpeed, enemy.body.velocity
             )
+            console.log(vel)
             enemy.text = this.add.text(enemy.x, enemy.y + 2,
                                        enemy.number, textStyle)
-            // enemy.text.anchor.set(0.5)
+            enemy.text.setOrigin(0.5)
             this.physics.world.enable(enemy.text)
             this.physics.velocityFromRotation(
                 approachAngle, this.enemySpeed, enemy.text.body.velocity
@@ -597,7 +588,6 @@ class PlayScene extends Phaser.Scene {
             this.enemyTime = this.time.now +
                 this.enemyTimeOffset +
                 Phaser.Math.Between(0, 8)*200
-                // game.rnd.integerInRange(0,8)*200
             this.enemiesDispatched++
         }
     }
