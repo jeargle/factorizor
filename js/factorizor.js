@@ -332,7 +332,16 @@ class PlayScene extends Phaser.Scene {
             'down': Phaser.Input.Keyboard.KeyCodes.S,
             'left': Phaser.Input.Keyboard.KeyCodes.A,
             'right': Phaser.Input.Keyboard.KeyCodes.D,
-            'fire': Phaser.Input.Keyboard.KeyCodes.SPACEBAR
+            'fire': Phaser.Input.Keyboard.KeyCodes.SPACE
+        })
+
+        this.physics.add.overlap(this.gun, this.enemies,
+                                 this.end, null, this)
+        this.physics.add.overlap(this.bullets, this.enemies,
+                                 this.hitEnemy, null, this)
+        this.physics.world.on('worldbounds', function(body) {
+            // console.log('WORLD BOUNDS')
+            that.removeBullet(body.gameObject)
         })
 
         // Score
@@ -349,10 +358,6 @@ class PlayScene extends Phaser.Scene {
         // console.log('[PLAY] update')
 
         now = this.time.now
-        // game.physics.arcade.overlap(this.gun, this.enemies,
-        //                             this.end, null, this)
-        // game.physics.arcade.overlap(this.bullets, this.enemies,
-        //                             this.hitEnemy, null, this)
 
         if (this.cursors.left.isDown) {
             this.gun.angle -= 1
@@ -525,6 +530,8 @@ class PlayScene extends Phaser.Scene {
     fire() {
         let bullet, bulletOffset
 
+        console.log('fire()')
+
         if (this.time.now > this.bulletTime) {
             this.bulletTime = this.time.now + this.bulletTimeOffset
             bullet = this.bullets.getFirstDead(false)
@@ -534,14 +541,13 @@ class PlayScene extends Phaser.Scene {
                 bullet.visible = true
                 bullet.body.collideWorldBounds = true
                 bullet.prime = this.chosenPrime
-                bulletOffset = game.physics.arcade.velocityFromAngle(
-                    this.gun.angle, 28
-                )
-                // bullet.reset(this.gun.x + bulletOffset.x,
-                //              this.gun.y + bulletOffset.y)
-                bullet.setPosition(this.gun.x + bulletOffset.x,
-                                   this.gun.y + bulletOffset.y)
-                game.physics.arcade.velocityFromAngle(
+                // bulletOffset = this.physics.velocityFromRotation(
+                //     this.gun.angle, 28
+                // )
+                // bullet.setPosition(this.gun.x + bulletOffset.x,
+                //                    this.gun.y + bulletOffset.y)
+                bullet.setPosition(this.gun.x, this.gun.y)
+                this.physics.velocityFromRotation(
                     this.gun.angle, this.bulletSpeed, bullet.body.velocity
                 )
             }
@@ -554,7 +560,7 @@ class PlayScene extends Phaser.Scene {
     dispatchEnemy() {
         let enemy, textStyle, enemyIdx, xPos, approachAngle
 
-        console.log('dispatchEnemy()')
+        // console.log('dispatchEnemy()')
 
         enemy = this.enemies.getFirstDead(false)
 
@@ -562,7 +568,6 @@ class PlayScene extends Phaser.Scene {
             font: '20px Arial',
             fill: '#ffffff',
             align: 'center',
-            // backgroundColor: '#ffff00'
         }
 
         if (enemy) {
@@ -574,10 +579,9 @@ class PlayScene extends Phaser.Scene {
             xPos = Phaser.Math.Between(1, 6)*100
             enemy.setPosition(xPos, 30)
             approachAngle = Phaser.Math.Angle.Between(enemy.x, enemy.y, this.gun.x, this.gun.y)
-            let vel = this.physics.velocityFromRotation(
+            this.physics.velocityFromRotation(
                 approachAngle, this.enemySpeed, enemy.body.velocity
             )
-            console.log(vel)
             enemy.text = this.add.text(enemy.x, enemy.y + 2,
                                        enemy.number, textStyle)
             enemy.text.setOrigin(0.5)
@@ -603,10 +607,16 @@ class PlayScene extends Phaser.Scene {
     hitEnemy(bullet, enemy) {
         let prime
 
-        prime = bullet.prime
-        bullet.kill()
+        console.log('hitEnemy()')
 
-        if (factors[enemy.number] === null) {
+        prime = bullet.prime
+        // bullet.kill()
+        this.removeBullet(bullet)
+
+        console.log('enemy.number: ' + enemy.number)
+        console.log('factors[enemy.number]:')
+        console.log(factors[enemy.number])
+        if (factors[enemy.number] == null) {
             if (prime === enemy.number) {
                 this.killEnemy(enemy)
             }
@@ -629,11 +639,13 @@ class PlayScene extends Phaser.Scene {
      * @param enemy
      */
     killEnemy(enemy) {
-        enemy.text.kill()
-        enemy.kill()
+        // enemy.text.kill()
+        // enemy.kill()
         this.explosion.play()
         score += 10
         this.enemiesKilled++
+
+        this.removeEnemy(enemy)
 
         if (this.enemiesKilled === this.enemyTotal) {
             game.state.start('level')
@@ -651,7 +663,7 @@ class PlayScene extends Phaser.Scene {
         soundIdx = Phaser.Math.Between(0, 2)
         this.hits[soundIdx].play()
 
-        enemy.animations.play('hurt')
+        // enemy.animations.play('hurt')
 
         enemy.number /= prime
         enemy.text.text = enemy.number
@@ -668,7 +680,7 @@ class PlayScene extends Phaser.Scene {
         soundIdx = Phaser.Math.Between(0, 2)
         this.pings[soundIdx].play()
 
-        enemy.animations.play('shield')
+        // enemy.animations.play('shield')
 
         velX = enemy.body.velocity.x
         velX += velX * 0.2
@@ -679,6 +691,20 @@ class PlayScene extends Phaser.Scene {
         enemy.body.velocity.y = velY
         enemy.text.body.velocity.x = velX
         enemy.text.body.velocity.y = velY
+    }
+
+    removeEnemy(enemy) {
+        enemy.body.collideWorldBounds = false
+        enemy.setActive(false)
+        enemy.setVisible(false)
+        enemy.setPosition(0, -100)
+    }
+
+    removeBullet(bullet) {
+        bullet.body.collideWorldBounds = false
+        bullet.setActive(false)
+        bullet.setVisible(false)
+        bullet.setPosition(0, -200)
     }
 
     /**
