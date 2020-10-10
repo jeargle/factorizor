@@ -528,7 +528,7 @@ class PlayScene extends Phaser.Scene {
      * Fire the main gun.
      */
     fire() {
-        let bullet, bulletOffset
+        let bullet, bulletOffset, angle
 
         console.log('fire()')
 
@@ -541,14 +541,14 @@ class PlayScene extends Phaser.Scene {
                 bullet.visible = true
                 bullet.body.collideWorldBounds = true
                 bullet.prime = this.chosenPrime
-                // bulletOffset = this.physics.velocityFromRotation(
-                //     this.gun.angle, 28
-                // )
-                // bullet.setPosition(this.gun.x + bulletOffset.x,
-                //                    this.gun.y + bulletOffset.y)
-                bullet.setPosition(this.gun.x, this.gun.y)
+                angle = Phaser.Math.DegToRad(this.gun.angle)
+                bulletOffset = this.physics.velocityFromRotation(
+                    angle, 28
+                )
+                bullet.setPosition(this.gun.x + bulletOffset.x,
+                                   this.gun.y + bulletOffset.y)
                 this.physics.velocityFromRotation(
-                    this.gun.angle, this.bulletSpeed, bullet.body.velocity
+                    angle, this.bulletSpeed, bullet.body.velocity
                 )
             }
         }
@@ -689,6 +689,7 @@ class PlayScene extends Phaser.Scene {
 
         enemy.body.velocity.x = velX
         enemy.body.velocity.y = velY
+        console.log(enemy.text)
         enemy.text.body.velocity.x = velX
         enemy.text.body.velocity.y = velY
     }
