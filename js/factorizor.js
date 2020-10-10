@@ -296,9 +296,11 @@ class PlayScene extends Phaser.Scene {
         }
         this.wheel = []
         for (i=0; i<this.primes.length; i++) {
-            this.wheel.push(this.add.text(400, 450,
-                                          this.primes[i],
-                                          primeStyle))
+            this.wheel.push(
+                this.add.text(400, 450,
+                              this.primes[i],
+                              primeStyle)
+            )
         }
         this.wheel[3].y = 475
         this.wheel[2].y = 500
@@ -350,6 +352,27 @@ class PlayScene extends Phaser.Scene {
             {font: '30px Courier',
              fill: '#ffffff'}
         )
+    }
+
+    resume() {
+        console.log('[PLAY] resume')
+
+        this.enemiesDispatched = 0
+        this.enemiesKilled = 0
+
+        // Set up enemy frequencies based on level info.
+        this.levelIdx = level
+        if (this.levelIdx >= levels.length) {
+            this.levelIdx = levels.length-1
+        }
+        this.enemyTotal = this.enemyCounts[this.levelIdx]
+        this.enemyFreqs = []
+        for (let i=0; i<levels[this.levelIdx].length; i++) {
+            for (let j=0; j<levels[this.levelIdx][i][1]; j++) {
+                this.enemyFreqs.push(i)
+            }
+        }
+
     }
 
     update() {
@@ -560,7 +583,7 @@ class PlayScene extends Phaser.Scene {
     dispatchEnemy() {
         let enemy, textStyle, enemyIdx, xPos, approachAngle
 
-        // console.log('dispatchEnemy()')
+        console.log('dispatchEnemy()')
 
         enemy = this.enemies.getFirstDead(false)
 
@@ -593,6 +616,8 @@ class PlayScene extends Phaser.Scene {
                 this.enemyTimeOffset +
                 Phaser.Math.Between(0, 8)*200
             this.enemiesDispatched++
+        } else {
+            console.log('No enemy found!!!')
         }
     }
 
@@ -648,7 +673,7 @@ class PlayScene extends Phaser.Scene {
         this.removeEnemy(enemy)
 
         if (this.enemiesKilled === this.enemyTotal) {
-            game.state.start('level')
+            this.nextLevel()
         }
     }
 
@@ -698,14 +723,33 @@ class PlayScene extends Phaser.Scene {
         enemy.body.collideWorldBounds = false
         enemy.setActive(false)
         enemy.setVisible(false)
+        // this.enemies.killAndHide(enemy)
         enemy.setPosition(0, -100)
+        enemy.body.velocity.x = 0
+        enemy.body.velocity.y = 0
+
+        enemy.text.setActive(false)
+        enemy.text.setVisible(false)
+        enemy.text.setPosition(0, -100)
+        enemy.text.body.velocity.x = 0
+        enemy.text.body.velocity.y = 0
     }
 
     removeBullet(bullet) {
         bullet.body.collideWorldBounds = false
         bullet.setActive(false)
         bullet.setVisible(false)
-        bullet.setPosition(0, -200)
+        bullet.setPosition(0, -2000)
+    }
+
+    /**
+     * Move to level screen.
+     */
+    nextLevel() {
+        console.log('[PLAY] nextLevel')
+
+        game.scene.getScene('level').resume()
+        game.scene.switch('play', 'level')
     }
 
     /**
@@ -715,9 +759,8 @@ class PlayScene extends Phaser.Scene {
         console.log('[PLAY] end')
 
         this.explosion.play()
-        // game.state.start('end')
 
-        this.scene.restart()
+        // this.scene.restart()
         game.scene.switch('play', 'end')
         this.cursors.right.isDown = false
         this.cursors.left.isDown = false
@@ -736,9 +779,11 @@ class LevelScene extends Phaser.Scene {
     create() {
         let nameLbl, startLbl
 
-        nameLbl = this.add.text(80, 160, 'LEVEL ' + (level+1) + ' COMPLETE',
-                                {font: '50px Courier',
-                                 fill: '#ffffff'})
+        console.log('[LEVEL] create')
+
+        this.nameLbl = this.add.text(80, 160, 'LEVEL ' + (level+1) + ' COMPLETE',
+                                     {font: '50px Courier',
+                                      fill: '#ffffff'})
         startLbl = this.add.text(80, 240, 'press "W" to start next level',
                                  {font: '30px Courier',
                                   fill: '#ffffff'})
@@ -746,9 +791,16 @@ class LevelScene extends Phaser.Scene {
         this.input.keyboard.on('keydown_W', this.start, this)
     }
 
+    resume() {
+        if (this.nameLbl) {
+            this.nameLbl.text = 'LEVEL ' + (level+1) + ' COMPLETE'
+        }
+    }
+
     start() {
         level += 1
-        game.state.start('play')
+        game.scene.getScene('play').resume()
+        game.scene.switch('level', 'play')
     }
 }
 
@@ -759,7 +811,7 @@ class EndScene extends Phaser.Scene {
     }
 
     create() {
-        let scoreLbl, nameLbl, startLbl
+        let scoreLbl, nameLbl, startLbl, highScoreLbl
 
         scoreLbl = this.add.text(600, 10, 'Score: ' + score,
                                  {font: '30px Courier',
@@ -815,4 +867,6 @@ const gameConfig = {
 }
 
 game = new Phaser.Game(gameConfig)
+
+// game.scene is a SceneManager
 game.scene.start('boot', { someData: '...arbitrary data' })
