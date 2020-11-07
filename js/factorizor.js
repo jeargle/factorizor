@@ -544,9 +544,7 @@ class PlayScene extends Phaser.Scene {
                         },
                         onCompleteScope: prime
                     })
-
-                }
-                else {
+                } else {
                     tween = this.tweens.add({
                         targets: prime,
                         y: prime.y - 25,         // '+=100'
@@ -561,14 +559,11 @@ class PlayScene extends Phaser.Scene {
             currentIdx = (i + primesLen) % primesLen
             this.wheel[currentIdx].setY(550)
             this.chosenPrimeIdx = ((this.chosenPrimeIdx - 1) + primesLen) % primesLen
-        }
-        else {
-            // for (i=1; i<5; i++) {
+        } else {
             for (i=this.chosenPrimeIdx-2;
                  i<this.chosenPrimeIdx+2;
                  i++) {
                 currentIdx = (i + primesLen) % primesLen
-                // prime = this.wheel[this.tweenPrimes[i]]
                 prime = this.wheel[currentIdx]
 
                 prime.setFill('#666666')
@@ -593,35 +588,12 @@ class PlayScene extends Phaser.Scene {
                         repeat: 0                // -1: infinity
                     })
                 }
-            //     if (i === 3) {
-            //         tween.onComplete = function() {
-            //             this.setFill('#ffffff')
-            //         }
-            //         tween.onCompleteScope = prime
-            //     }
-            //     else if (i === 2) {
-            //         prime.setFill('#666666')
-            //     }
-            // }
             }
 
             i = this.chosenPrimeIdx+3
             currentIdx = (i + primesLen) % primesLen
             this.wheel[currentIdx].setY(475)
             this.chosenPrimeIdx = ((this.chosenPrimeIdx + 1) + primesLen) % primesLen
-
-            // for (i=0; i<4; i++) {
-            //     this.tweenPrimes[i] = this.tweenPrimes[i+1]
-            // }
-
-            // if (this.tweenPrimes[4] === this.primes.length-1) {
-            //     this.tweenPrimes[4] = 0
-            // }
-            // else {
-            //     this.tweenPrimes[4] = this.tweenPrimes[4]+1
-            // }
-            // this.wheel[this.tweenPrimes[4]].y = 450
-            // this.chosenPrimeIdx = ((this.chosenPrimeIdx + 1) + primesLen) % primesLen
         }
 
         this.chosenPrime = this.primes[this.chosenPrimeIdx]
@@ -681,13 +653,14 @@ class PlayScene extends Phaser.Scene {
             enemy.visible = true
             enemy.body.setCircle(16)
             enemyIdx = Phaser.Math.Between(0, this.enemyFreqs.length-1)
-            enemy.number = levels[this.levelIdx][this.enemyFreqs[enemyIdx]][0]
             xPos = Phaser.Math.Between(1, 6)*100
             enemy.setPosition(xPos, 30)
             approachAngle = Phaser.Math.Angle.Between(enemy.x, enemy.y, this.gun.x, this.gun.y)
             this.physics.velocityFromRotation(
                 approachAngle, this.enemySpeed, enemy.body.velocity
             )
+
+            enemy.number = levels[this.levelIdx][this.enemyFreqs[enemyIdx]][0]
             enemy.text = this.add.text(enemy.x, enemy.y + 2,
                                        enemy.number, textStyle)
             enemy.text.setOrigin(0.5)
@@ -727,16 +700,13 @@ class PlayScene extends Phaser.Scene {
         if (factors[enemy.number] == null) {
             if (prime === enemy.number) {
                 this.killEnemy(enemy)
-            }
-            else {
+            } else {
                 // console.log('bounce 1')
                 this.angerEnemy(enemy)
             }
-        }
-        else if (factors[enemy.number][prime] != null) {
+        } else if (factors[enemy.number][prime] != null) {
             this.hurtEnemy(enemy, prime)
-        }
-        else {
+        } else {
             // console.log('bounce 2')
             this.angerEnemy(enemy)
         }
@@ -910,8 +880,7 @@ class EndScene extends Phaser.Scene {
             highScoreLbl = this.add.text(510, 50, 'High Score: ' + highScore,
                                          {font: '30px Courier',
                                           fill: '#ffffff'})
-        }
-        else {
+        } else {
             highScoreLbl = this.add.text(300, 50, 'New High Score!',
                                          {font: '30px Courier',
                                           fill: '#ffffff'})
