@@ -332,14 +332,7 @@ class PlayScene extends Phaser.Scene {
         })
         this.enemies.children.iterate(function(enemy) {
             that.enemies.killAndHide(enemy)
-            // enemy.body.onWorldBounds = true
         })
-        // this.enemies.setAll('outOfBoundsKill', true)
-        // this.enemies.setAll('checkWorldBounds', true)
-        // this.enemies.setAll('anchor.x', 0.5)
-        // this.enemies.setAll('anchor.y', 0.5)
-        // this.enemies.callAll('animations.add', 'animations', 'shield', [2, 0], 10, false)
-        // this.enemies.callAll('animations.add', 'animations', 'hurt', [3, 0], 10, false)
         this.enemiesDispatched = 0
         this.enemiesKilled = 0
         this.enemyTime = 0
@@ -352,7 +345,6 @@ class PlayScene extends Phaser.Scene {
         if (this.levelIdx >= levels.length) {
             this.levelIdx = levels.length-1
         }
-        // this.enemyCounts = [5, 10, 10, 10, 10, 20, 20, 20, 20, 20, 20, 20, 20],
         this.enemyCounts = [5, 5, 5, 5, 10, 10, 10, 10, 10, 10, 10, 10, 10]
         this.enemyTotal = this.enemyCounts[this.levelIdx]
         this.enemyFreqs = []
@@ -364,16 +356,17 @@ class PlayScene extends Phaser.Scene {
 
         // Factor wheel
         this.primes = [2, 3, 5, 7, 11, 13, 17, 19]
+        this.primeTexts = ['02', '03', '05', '07', '11', '13', '17', '19']
         primeStyle = {
             font: '20px Arial',
             fill: '#666666',
             align: 'center',
         }
         this.wheel = []
-        for (i=0; i<this.primes.length; i++) {
+        for (i=0; i<this.primeTexts.length; i++) {
             this.wheel.push(
                 this.add.text(400, 450,
-                              this.primes[i],
+                              this.primeTexts[i],
                               primeStyle)
             )
         }
@@ -531,9 +524,8 @@ class PlayScene extends Phaser.Scene {
         let tween, prime, primesLen, i, currentIdx
 
         primesLen = this.primes.length
+        this.primeTime = this.time.now + this.primeTimeOffset
         if (scrollDir === 'down') {
-            this.primeTime = this.time.now +
-                this.primeTimeOffset
             for (i=this.chosenPrimeIdx-2;
                  i<this.chosenPrimeIdx+2;
                  i++) {
@@ -572,50 +564,67 @@ class PlayScene extends Phaser.Scene {
             this.chosenPrimeIdx = ((this.chosenPrimeIdx - 1) + primesLen) % primesLen
         }
         else {
-            this.primeTime = this.time.now +
-                this.primeTimeOffset
-            for (i=1; i<5; i++) {
-                prime = this.wheel[this.tweenPrimes[i]]
-                // tween = game.add.tween(prime)
-                //     .to({y: prime.y+25}, 180,
-                //         Phaser.Easing.Linear.None,
-                //         true)
+            // for (i=1; i<5; i++) {
+            for (i=this.chosenPrimeIdx-2;
+                 i<this.chosenPrimeIdx+2;
+                 i++) {
+                currentIdx = (i + primesLen) % primesLen
+                // prime = this.wheel[this.tweenPrimes[i]]
+                prime = this.wheel[currentIdx]
 
-                tween = this.tweens.add({
-                    targets: prime,
-                    y: prime.y + 25,         // '+=100'
-                    ease: 'Linear',          // 'Cubic', 'Elastic', 'Bounce', 'Back'
-                    duration: 180,
-                    repeat: 0                // -1: infinity
-                })
-
-                if (i === 3) {
-                    tween.onComplete = function() {
-                        this.setFill('#ffffff')
-                    }
-                    tween.onCompleteScope = prime
+                prime.setFill('#666666')
+                if (i === this.chosenPrimeIdx+1) {
+                    tween = this.tweens.add({
+                        targets: prime,
+                        y: prime.y + 25,         // '+=100'
+                        ease: 'Linear',          // 'Cubic', 'Elastic', 'Bounce', 'Back'
+                        duration: 10,
+                        repeat: 0,               // -1: infinity
+                        onComplete: function() {
+                            this.setFill('#ffffff')
+                        },
+                        onCompleteScope: prime
+                    })
+                } else {
+                    tween = this.tweens.add({
+                        targets: prime,
+                        y: prime.y + 25,         // '+=100'
+                        ease: 'Linear',          // 'Cubic', 'Elastic', 'Bounce', 'Back'
+                        duration: 10,
+                        repeat: 0                // -1: infinity
+                    })
                 }
-                else if (i === 2) {
-                    prime.setFill('#666666')
-                }
+            //     if (i === 3) {
+            //         tween.onComplete = function() {
+            //             this.setFill('#ffffff')
+            //         }
+            //         tween.onCompleteScope = prime
+            //     }
+            //     else if (i === 2) {
+            //         prime.setFill('#666666')
+            //     }
+            // }
             }
 
-            for (i=0; i<4; i++) {
-                this.tweenPrimes[i] = this.tweenPrimes[i+1]
-            }
-
-            if (this.tweenPrimes[4] === this.primes.length-1) {
-                this.tweenPrimes[4] = 0
-            }
-            else {
-                this.tweenPrimes[4] = this.tweenPrimes[4]+1
-            }
-            this.wheel[this.tweenPrimes[4]].y = 450
+            i = this.chosenPrimeIdx+3
+            currentIdx = (i + primesLen) % primesLen
+            this.wheel[currentIdx].setY(475)
             this.chosenPrimeIdx = ((this.chosenPrimeIdx + 1) + primesLen) % primesLen
+
+            // for (i=0; i<4; i++) {
+            //     this.tweenPrimes[i] = this.tweenPrimes[i+1]
+            // }
+
+            // if (this.tweenPrimes[4] === this.primes.length-1) {
+            //     this.tweenPrimes[4] = 0
+            // }
+            // else {
+            //     this.tweenPrimes[4] = this.tweenPrimes[4]+1
+            // }
+            // this.wheel[this.tweenPrimes[4]].y = 450
+            // this.chosenPrimeIdx = ((this.chosenPrimeIdx + 1) + primesLen) % primesLen
         }
 
-        // this.chosenPrime = this.primes[this.tweenPrimes[2]]
-        // this.wheelScale[this.tweenPrimes[2]].play()
         this.chosenPrime = this.primes[this.chosenPrimeIdx]
         this.wheelScale[this.chosenPrimeIdx].play()
 
