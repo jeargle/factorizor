@@ -289,13 +289,16 @@ class PlayScene extends Phaser.Scene {
         this.lastDir = null
         this.dirTime1 = 0
         this.dirTime2 = 0
-        this.dirTime1Offset = 200
-        this.dirTime2Offset = 500
+        this.dirTime3 = 0
+        this.dirTime1Offset = 50
+        this.dirTime2Offset = 150
+        this.dirTime3Offset = 300
 
         // Gun
         this.gun = this.physics.add.sprite(400, 400, 'gun')
         this.gun.body.setCircle(28)
         this.gun.angle -= 90
+        this.gunSpeed = [1, 2, 4, 6]
 
         // Bullets
         this.bullets = this.physics.add.group({
@@ -433,6 +436,7 @@ class PlayScene extends Phaser.Scene {
         if (this.levelIdx >= levels.length) {
             this.levelIdx = levels.length-1
         }
+
         this.enemyTotal = this.enemyCounts[this.levelIdx]
         this.enemyFreqs = []
         for (let i=0; i<levels[this.levelIdx].length; i++) {
@@ -452,44 +456,40 @@ class PlayScene extends Phaser.Scene {
 
         if (this.cursors.left.isDown) {
             this.gun.angle -= 1
-            // console.log('angle: ' + this.gun.angle)
             if (this.lastDir != 'left') {
                 this.lastDir = 'left'
                 this.dirTime1 = now + this.dirTime1Offset
                 this.dirTime2 = now + this.dirTime2Offset
+                this.dirTime3 = now + this.dirTime3Offset
+            } else {
+                if (now > this.dirTime3) {
+                    this.gun.angle -= this.gunSpeed[3]
+                } else if (now > this.dirTime2) {
+                    this.gun.angle -= this.gunSpeed[2]
+                } else if (now > this.dirTime1) {
+                    this.gun.angle -= this.gunSpeed[1]
+                } else {
+                    this.gun.angle -= this.gunSpeed[0]
+                }
             }
-            else {
-                if (now > this.dirTime2) {
-                    this.gun.angle -= 3
-                }
-                else if (now > this.dirTime1) {
-                    this.gun.angle -= 2
-                }
-                else {
-                    this.gun.angle -= 1
-                }
-            }
-        }
-        else if (this.cursors.right.isDown) {
-            // console.log('angle: ' + this.gun.angle)
+        } else if (this.cursors.right.isDown) {
             if (this.lastDir != 'right') {
                 this.lastDir = 'right'
                 this.dirTime1 = now + this.dirTime1Offset
                 this.dirTime2 = now + this.dirTime2Offset
+                this.dirTime3 = now + this.dirTime3Offset
+            } else {
+                if (now > this.dirTime3) {
+                    this.gun.angle += this.gunSpeed[3]
+                } else if (now > this.dirTime2) {
+                    this.gun.angle += this.gunSpeed[2]
+                } else if (now > this.dirTime1) {
+                    this.gun.angle += this.gunSpeed[1]
+                } else {
+                    this.gun.angle += this.gunSpeed[0]
+                }
             }
-            else {
-                if (now > this.dirTime2) {
-                    this.gun.angle += 3
-                }
-                else if (now > this.dirTime1) {
-                    this.gun.angle += 2
-                }
-                else {
-                    this.gun.angle += 1
-                }
-            }
-        }
-        else {
+        } else {
             if (this.lastDir != null) {
                 this.lastDir = null
             }
@@ -498,8 +498,7 @@ class PlayScene extends Phaser.Scene {
         if (now > this.primeTime) {
             if (this.cursors.up.isDown) {
                 this.primeSelect('up')
-            }
-            else if (this.cursors.down.isDown) {
+            } else if (this.cursors.down.isDown) {
                 this.primeSelect('down')
             }
         }
