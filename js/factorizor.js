@@ -661,6 +661,8 @@ class PlayScene extends Phaser.Scene {
             )
 
             enemy.number = levels[this.levelIdx][this.enemyFreqs[enemyIdx]][0]
+            enemy.perfectHits = factors[enemy.number] != null
+
             enemy.text = this.add.text(enemy.x, enemy.y + 2,
                                        enemy.number, textStyle)
             enemy.text.setOrigin(0.5)
@@ -688,26 +690,21 @@ class PlayScene extends Phaser.Scene {
     hitEnemy(bullet, enemy) {
         let prime
 
-        console.log('hitEnemy()')
+        // console.log('hitEnemy()')
 
         prime = bullet.prime
-        // bullet.kill()
         this.removeBullet(bullet)
 
-        console.log('enemy.number: ' + enemy.number)
-        console.log('factors[enemy.number]:')
-        console.log(factors[enemy.number])
+        console.log('enemy.number: ' + enemy.number + ', factors[enemy.number]: ' + factors[enemy.number])
         if (factors[enemy.number] == null) {
             if (prime === enemy.number) {
                 this.killEnemy(enemy)
             } else {
-                // console.log('bounce 1')
                 this.angerEnemy(enemy)
             }
         } else if (factors[enemy.number][prime] != null) {
             this.hurtEnemy(enemy, prime)
         } else {
-            // console.log('bounce 2')
             this.angerEnemy(enemy)
         }
     }
@@ -717,13 +714,15 @@ class PlayScene extends Phaser.Scene {
      * @param enemy
      */
     killEnemy(enemy) {
-        // enemy.text.kill()
-        // enemy.kill()
         this.explosion.play()
         score += 10
         this.enemiesKilled++
 
         this.removeEnemy(enemy)
+
+        if (enemy.perfectHits) {
+            console.log('*** PERFECT ***')
+        }
 
         if (this.enemiesKilled === this.enemyTotal) {
             this.nextLevel()
@@ -768,6 +767,7 @@ class PlayScene extends Phaser.Scene {
         enemy.body.velocity.x = velX
         enemy.body.velocity.y = velY
         console.log(enemy.text)
+        enemy.perfectHits = false
         enemy.text.body.velocity.x = velX
         enemy.text.body.velocity.y = velY
     }
