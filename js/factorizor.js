@@ -296,7 +296,7 @@ class PlayScene extends Phaser.Scene {
 
         // Gun
         this.gun = this.physics.add.sprite(400, 400, 'gun')
-        this.gun.body.setCircle(28)
+        this.gun.body.setCircle(28, 4, 4)
         this.gun.angle -= 90
         this.gunSpeed = [1, 2, 4, 6]
 
