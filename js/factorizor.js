@@ -372,6 +372,7 @@ class PlayScene extends Phaser.Scene {
                               this.primeTexts[i],
                               primeStyle)
             )
+            this.wheel[i].setOrigin(0.5)
         }
         this.wheel[3].y = 475
         this.wheel[2].y = 500
@@ -396,8 +397,8 @@ class PlayScene extends Phaser.Scene {
         ]
 
         // Blocks
-        block = this.physics.add.sprite(400, 443, 'block')
-        block = this.physics.add.sprite(400, 550, 'block')
+        block = this.physics.add.sprite(400, 445, 'block')
+        block = this.physics.add.sprite(400, 552, 'block')
 
         // Controls
         this.cursors = this.input.keyboard.addKeys({
@@ -520,10 +521,11 @@ class PlayScene extends Phaser.Scene {
      * @param scrollDir {string} - direction to move: 'up' or 'down'
      */
     primeSelect(scrollDir) {
-        let tween, prime, primesLen, i, currentIdx
+        let tween, prime, primesLen, i, currentIdx, duration
 
         primesLen = this.primes.length
         this.primeTime = this.time.now + this.primeTimeOffset
+        duration = 75
         if (scrollDir === 'down') {
             for (i=this.chosenPrimeIdx-2;
                  i<this.chosenPrimeIdx+2;
@@ -537,7 +539,7 @@ class PlayScene extends Phaser.Scene {
                         targets: prime,
                         y: prime.y - 25,         // '+=100'
                         ease: 'Linear',          // 'Cubic', 'Elastic', 'Bounce', 'Back'
-                        duration: 10,
+                        duration: duration,
                         repeat: 0,                // -1: infinity
                         onComplete: function() {
                             this.setFill('#ffffff')
@@ -549,7 +551,7 @@ class PlayScene extends Phaser.Scene {
                         targets: prime,
                         y: prime.y - 25,         // '+=100'
                         ease: 'Linear',          // 'Cubic', 'Elastic', 'Bounce', 'Back'
-                        duration: 10,
+                        duration: duration,
                         repeat: 0                // -1: infinity
                     })
                 }
@@ -560,8 +562,8 @@ class PlayScene extends Phaser.Scene {
             this.wheel[currentIdx].setY(550)
             this.chosenPrimeIdx = ((this.chosenPrimeIdx - 1) + primesLen) % primesLen
         } else {
-            for (i=this.chosenPrimeIdx-2;
-                 i<this.chosenPrimeIdx+2;
+            for (i=this.chosenPrimeIdx-1;
+                 i<this.chosenPrimeIdx+3;
                  i++) {
                 currentIdx = (i + primesLen) % primesLen
                 prime = this.wheel[currentIdx]
@@ -572,7 +574,7 @@ class PlayScene extends Phaser.Scene {
                         targets: prime,
                         y: prime.y + 25,         // '+=100'
                         ease: 'Linear',          // 'Cubic', 'Elastic', 'Bounce', 'Back'
-                        duration: 10,
+                        duration: duration,
                         repeat: 0,               // -1: infinity
                         onComplete: function() {
                             this.setFill('#ffffff')
@@ -584,7 +586,7 @@ class PlayScene extends Phaser.Scene {
                         targets: prime,
                         y: prime.y + 25,         // '+=100'
                         ease: 'Linear',          // 'Cubic', 'Elastic', 'Bounce', 'Back'
-                        duration: 10,
+                        duration: duration,
                         repeat: 0                // -1: infinity
                     })
                 }
@@ -592,7 +594,7 @@ class PlayScene extends Phaser.Scene {
 
             i = this.chosenPrimeIdx+3
             currentIdx = (i + primesLen) % primesLen
-            this.wheel[currentIdx].setY(475)
+            this.wheel[currentIdx].setY(450)
             this.chosenPrimeIdx = ((this.chosenPrimeIdx + 1) + primesLen) % primesLen
         }
 
