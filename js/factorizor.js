@@ -110,6 +110,7 @@ class TitleScene extends Phaser.Scene {
         console.log('[TITLE] play')
         score = 0
         level = 0
+        game.scene.getScene('level').resume()
         game.scene.switch('title', 'play')
     }
 }
@@ -811,17 +812,32 @@ class PlayScene extends Phaser.Scene {
      * Move to end screen.
      */
     end() {
+        let enemy, bullet
         console.log('[PLAY] end')
 
         this.explosion.play()
+        this.registry.destroy()
+        this.events.off()
 
-        // this.scene.restart()
+        enemy = this.enemies.getFirstAlive()
+        while (enemy != null) {
+            this.removeEnemy(enemy)
+            enemy = this.enemies.getFirstAlive()
+        }
+
+        bullet = this.bullets.getFirstAlive()
+        while (bullet != null) {
+            this.removeBullet(bullet)
+            bullet = this.bullets.getFirstAlive()
+        }
+
         game.scene.switch('play', 'end')
         this.cursors.right.isDown = false
         this.cursors.left.isDown = false
         this.cursors.up.isDown = false
         this.cursors.down.isDown = false
         console.log('CURSORS OFF')
+        this.scene.stop()
     }
 }
 
