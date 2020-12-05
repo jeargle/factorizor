@@ -8,8 +8,8 @@ Shoot invaders out of the sky before they reach your base.  The catch is that th
 Controls
 --------
 
-A - swivel gun left
-D - swivel gun right
-W - increase prime factor
-S - decrease prime factor
-SPACE - fire
+* A - swivel gun left
+* D - swivel gun right
+* W - increase prime factor
+* S - decrease prime factor
+* SPACE - fire
