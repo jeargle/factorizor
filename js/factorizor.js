@@ -456,8 +456,9 @@ class PlayScene extends Phaser.Scene {
 
         now = this.time.now
 
-        if (this.cursors.left.isDown) {
-            this.gun.angle -= 1
+        if (this.cursors.left.isDown &&
+            -180 < this.gun.angle &&
+            this.gun.angle <= 0) {
             if (this.lastDir != 'left') {
                 this.lastDir = 'left'
                 this.dirTime1 = now + this.dirTime1Offset
@@ -474,7 +475,10 @@ class PlayScene extends Phaser.Scene {
                     this.gun.angle -= this.gunSpeed[0]
                 }
             }
-        } else if (this.cursors.right.isDown) {
+            if (this.gun.angle > 0) this.gun.angle = -180
+        } else if (this.cursors.right.isDown &&
+                   -180 <= this.gun.angle &&
+                   this.gun.angle < 0) {
             if (this.lastDir != 'right') {
                 this.lastDir = 'right'
                 this.dirTime1 = now + this.dirTime1Offset
@@ -491,6 +495,7 @@ class PlayScene extends Phaser.Scene {
                     this.gun.angle += this.gunSpeed[0]
                 }
             }
+            if (this.gun.angle > 0) this.gun.angle = 0
         } else {
             if (this.lastDir != null) {
                 this.lastDir = null
@@ -601,8 +606,6 @@ class PlayScene extends Phaser.Scene {
 
         this.chosenPrime = this.primes[this.chosenPrimeIdx]
         this.wheelScale[this.chosenPrimeIdx].play()
-
-        // console.log(this.chosenPrime)
     }
 
     /**
