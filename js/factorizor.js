@@ -38,7 +38,6 @@ class LoadScene extends Phaser.Scene {
         // Load images
         this.load.image('gun', 'assets/gun-blue.png')
         this.load.image('bullet', 'assets/bullet.png')
-        // this.load.image('enemy', 'assets/circle-red.png')
         this.load.image('block', 'assets/square-blue.png')
         this.load.spritesheet(
             'enemy', 'assets/circles.png',
@@ -397,6 +396,7 @@ class PlayScene extends Phaser.Scene {
         // Enemies
         this.enemies = this.physics.add.group({
             key: 'enemy',
+            // frame: 1,
             active: false,
             repeat: 30,
             setXY: { x: 0, y: -300},
