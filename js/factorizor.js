@@ -764,11 +764,21 @@ class PlayScene extends Phaser.Scene {
         let prime
 
         // console.log('hitEnemy()')
+        // console.log('factors[' + enemy.number + ']: ' + factors[enemy.number])
 
         prime = bullet.prime
         this.removeBullet(bullet)
+        this.primeHitEnemy(prime, enemy)
+    }
 
-        console.log('enemy.number: ' + enemy.number + ', factors[enemy.number]: ' + factors[enemy.number])
+    /**
+     * @param prime
+     * @param enemy
+     */
+    primeHitEnemy(prime, enemy) {
+        console.log('primeHitEnemy()')
+        console.log('factors[' + enemy.number + ']: ' + factors[enemy.number])
+
         if (factors[enemy.number] == null) {
             if (prime === enemy.number) {
                 this.killEnemy(enemy)
@@ -787,6 +797,8 @@ class PlayScene extends Phaser.Scene {
      * @param enemy
      */
     killEnemy(enemy) {
+        let numActive, i, activeEnemy, comboEnemies
+
         this.explosion.play()
         score += 10
         this.enemiesKilled++
@@ -794,7 +806,25 @@ class PlayScene extends Phaser.Scene {
         this.removeEnemy(enemy)
 
         if (enemy.perfectHits) {
-            console.log('*** PERFECT ***')
+            // console.log('*** PERFECT ***')
+            score += 50
+            numActive = this.enemies.countActive()
+            comboEnemies = []
+            for (i=1; i<=numActive; i++) {
+                activeEnemy = this.enemies.getFirstNth(i, true)
+                if (enemy.number == activeEnemy.number) {
+                    // Combos do not trigger multiple perfect hits.
+                    activeEnemy.perfectHits = false
+                    comboEnemies.push(activeEnemy)
+                } else if (factors[activeEnemy.number] != null &&
+                           factors[activeEnemy.number][enemy.number] != null) {
+                    comboEnemies.push(activeEnemy)
+                }
+            }
+
+            for (i=0; i<comboEnemies.length; i++) {
+                this.primeHitEnemy(enemy.number, comboEnemies[i])
+            }
         }
 
         if (this.enemiesKilled === this.enemyTotal) {
@@ -826,11 +856,8 @@ class PlayScene extends Phaser.Scene {
     angerEnemy(enemy) {
         let soundIdx, velX, velY
 
-        // soundIdx = game.rnd.integerInRange(0,2)
         soundIdx = Phaser.Math.Between(0, 2)
         this.pings[soundIdx].play()
-
-        // enemy.animations.play('shield')
 
         velX = enemy.body.velocity.x
         velX += velX * 0.2
@@ -839,7 +866,6 @@ class PlayScene extends Phaser.Scene {
 
         enemy.body.velocity.x = velX
         enemy.body.velocity.y = velY
-        console.log(enemy.text)
         enemy.perfectHits = false
         enemy.text.body.velocity.x = velX
         enemy.text.body.velocity.y = velY
@@ -849,7 +875,6 @@ class PlayScene extends Phaser.Scene {
         enemy.body.collideWorldBounds = false
         enemy.setActive(false)
         enemy.setVisible(false)
-        // this.enemies.killAndHide(enemy)
         enemy.setPosition(0, -100)
         enemy.body.velocity.x = 0
         enemy.body.velocity.y = 0
