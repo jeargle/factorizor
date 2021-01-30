@@ -60,6 +60,7 @@ class LoadScene extends Phaser.Scene {
         this.load.audio('wheelB4', 'assets/B4.wav')
         this.load.audio('wheelC5', 'assets/C5.wav')
         this.load.audio('explosion', 'assets/explosion.wav')
+        this.load.audio('fire1', 'assets/fire1.wav')
         this.load.audio('hit1', 'assets/hit1.wav')
         this.load.audio('hit2', 'assets/hit2.wav')
         this.load.audio('hit3', 'assets/hit3.wav')
@@ -382,6 +383,7 @@ class PlayScene extends Phaser.Scene {
         this.bulletTime = 0
         this.bulletTimeOffset = 200
         this.bulletSpeed = 500
+        this.sound.add('fire1')
 
         this.hits = []
         this.hits.push(this.sound.add('hit1'))
@@ -701,6 +703,7 @@ class PlayScene extends Phaser.Scene {
                 this.physics.velocityFromRotation(
                     angle, this.bulletSpeed, bullet.body.velocity
                 )
+                this.sound.play('fire1')
             }
         }
     }
