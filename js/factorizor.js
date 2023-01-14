@@ -466,13 +466,16 @@ class PlayScene extends Phaser.Scene {
 
         if (enemy.perfectHits) {
             // console.log('*** PERFECT ***')
-            score += 50
+            score += 40
             numActive = this.enemies.countActive()
             comboEnemies = []
             for (i=1; i<=numActive; i++) {
                 activeEnemy = this.enemies.getFirstNth(i, true)
                 if (enemy.number == activeEnemy.number) {
                     // Combos do not trigger multiple perfect hits.
+                    // Should they?
+                    // Maybe they should still get the perfectHit score or even
+                    // some kind of stacking score.
                     activeEnemy.perfectHits = false
                     comboEnemies.push(activeEnemy)
                 } else if (factors[activeEnemy.number] != null &&
