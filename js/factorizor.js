@@ -13,6 +13,7 @@ class BootScene extends Phaser.Scene {
     }
 
     create() {
+        console.log('[BOOT] create')
         game.scene.start('load')
         game.scene.remove('boot')
     }
@@ -70,6 +71,7 @@ class LoadScene extends Phaser.Scene {
     }
 
     create() {
+        console.log('[LOAD] create')
         game.scene.start('title')
         game.scene.remove('load')
     }
@@ -91,6 +93,8 @@ class TitleScene extends Phaser.Scene {
 
     create() {
         let nameLbl, startLbl
+
+        console.log('[TITLE] create')
 
         nameLbl = this.add.text(80, 160, 'Factorizor',
                                 {font: '50px Courier',
@@ -581,13 +585,15 @@ class PlayScene extends Phaser.Scene {
             bullet = this.bullets.getFirstAlive()
         }
 
-        game.scene.switch('play', 'end')
         this.cursors.right.isDown = false
         this.cursors.left.isDown = false
         this.cursors.up.isDown = false
         this.cursors.down.isDown = false
         console.log('CURSORS OFF')
         this.scene.stop()
+
+        game.scene.switch('play', 'end')
+
     }
 }
 
@@ -634,6 +640,8 @@ class EndScene extends Phaser.Scene {
     create() {
         let scoreLbl, nameLbl, startLbl, highScoreLbl
 
+        console.log('[END] create')
+
         scoreLbl = this.add.text(600, 10, 'Score: ' + score,
                                  {font: '30px Courier',
                                   fill: '#ffffff'})
@@ -659,6 +667,8 @@ class EndScene extends Phaser.Scene {
     }
 
     restart() {
+        console.log('[END] restart')
+        this.scene.stop()
         game.scene.switch('end', 'title')
     }
 }
