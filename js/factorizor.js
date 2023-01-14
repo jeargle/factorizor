@@ -231,7 +231,7 @@ class PlayScene extends Phaser.Scene {
 
         // Score
         this.scoreText = this.add.text(
-            600, 475, 'Score: ' + score,
+            580, 475, 'Score: ' + score,
             {font: '30px Courier',
              fill: '#ffffff'}
         )
@@ -642,7 +642,7 @@ class EndScene extends Phaser.Scene {
 
         console.log('[END] create')
 
-        scoreLbl = this.add.text(600, 10, 'Score: ' + score,
+        scoreLbl = this.add.text(580, 10, 'Score: ' + score,
                                  {font: '30px Courier',
                                   fill: '#ffffff'})
         nameLbl = this.add.text(80, 160, 'YOU DIED',
@@ -653,7 +653,7 @@ class EndScene extends Phaser.Scene {
                                   fill: '#ffffff'})
 
         if (score <= highScore) {
-            highScoreLbl = this.add.text(510, 50, 'High Score: ' + highScore,
+            highScoreLbl = this.add.text(490, 50, 'High Score: ' + highScore,
                                          {font: '30px Courier',
                                           fill: '#ffffff'})
         } else {
