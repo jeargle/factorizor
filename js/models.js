@@ -28,7 +28,8 @@ class FactorWheel {
         this.chosenPrime = this.primes[this.chosenPrimeIdx]   // active prime
         this.tweenPrimes = [0, 1, 2, 3, 4]
         this.primeTime = 0
-        this.primeTimeOffset = 180
+        // this.primeTimeOffset = 180
+        this.primeTimeOffset = 280
 
         this.wheelScale = [
             this.scene.sound.add('wheelC4'),
@@ -40,6 +41,16 @@ class FactorWheel {
             this.scene.sound.add('wheelB4'),
             this.scene.sound.add('wheelC5')
         ]
+        // this.wheelScale = [
+        //     this.scene.sound.add('wheelC4'),
+        //     this.scene.sound.add('wheelC4'),
+        //     this.scene.sound.add('wheelCs4'),
+        //     this.scene.sound.add('wheelC4'),
+        //     this.scene.sound.add('wheelD4'),
+        //     this.scene.sound.add('wheelC4'),
+        //     this.scene.sound.add('wheelE4'),
+        //     this.scene.sound.add('wheelDs4'),
+        // ]
     }
 
     /**
@@ -54,6 +65,7 @@ class FactorWheel {
         primesLen = this.primes.length
         this.primeTime = this.scene.time.now + this.primeTimeOffset
         duration = 75
+        // duration = 50
         if (scrollDir === 'down') {
             for (i=this.chosenPrimeIdx-2;
                  i<this.chosenPrimeIdx+2;
@@ -68,11 +80,11 @@ class FactorWheel {
                         y: prime.y - 25,         // '+=100'
                         ease: 'Linear',          // 'Cubic', 'Elastic', 'Bounce', 'Back'
                         duration: duration,
-                        repeat: 0,                // -1: infinity
+                        repeat: 0,               // -1: infinity
                         onComplete: function() {
                             this.setFill('#ffffff')
                         },
-                        onCompleteScope: prime
+                        callbackScope: prime
                     })
                 } else {
                     tween = this.scene.tweens.add({
@@ -107,7 +119,7 @@ class FactorWheel {
                         onComplete: function() {
                             this.setFill('#ffffff')
                         },
-                        onCompleteScope: prime
+                        callbackScope: prime
                     })
                 } else {
                     tween = this.scene.tweens.add({
