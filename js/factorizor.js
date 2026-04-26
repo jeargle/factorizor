@@ -149,10 +149,10 @@ class PlayScene extends Phaser.Scene {
         this.bullets = this.physics.add.group({
             key: 'bullet',
             active: false,
-            repeat: 30,
+            repeat: 10,
             setXY: { x: 0, y: -200},
         })
-        this.bullets.children.iterate(function(bullet) {
+        this.bullets.children.forEach(function(bullet) {
             that.bullets.killAndHide(bullet)
             bullet.body.onWorldBounds = true
         })
@@ -160,6 +160,7 @@ class PlayScene extends Phaser.Scene {
         this.bulletTime = 0
         this.bulletTimeOffset = 200
         this.bulletSpeed = 500
+        // this.bulletSpeed = 300
         this.sound.add('fire1')
 
         this.hits = []
@@ -180,7 +181,7 @@ class PlayScene extends Phaser.Scene {
             repeat: 30,
             setXY: { x: 0, y: -300},
         })
-        this.enemies.children.iterate(function(enemy) {
+        this.enemies.children.forEach(function(enemy) {
             that.enemies.killAndHide(enemy)
         })
         this.enemiesDispatched = 0
@@ -188,6 +189,7 @@ class PlayScene extends Phaser.Scene {
         this.enemyTime = 0
         this.enemyTimeOffset = 2000
         this.enemySpeed = 20
+        // this.enemySpeed = 2
         this.explosion = this.sound.add('explosion')
 
         // Set up enemy frequencies based on level info.
@@ -196,6 +198,7 @@ class PlayScene extends Phaser.Scene {
             this.levelIdx = levels.length-1
         }
         this.enemyCounts = [5, 5, 5, 5, 10, 10, 10, 10, 10, 10, 10, 10]
+        // this.enemyCounts = [15, 15, 15, 15, 10, 10, 10, 10, 10, 10, 10, 10]
         this.enemyTotal = this.enemyCounts[this.levelIdx]
         this.enemyFreqs = []
         for (i=0; i<levels[this.levelIdx].length; i++) {
@@ -406,6 +409,7 @@ class PlayScene extends Phaser.Scene {
                 this.enemyTimeOffset +
                 Phaser.Math.Between(0, 8)*200
             this.enemiesDispatched++
+            console.log(`enemiesDispatched: ${this.enemiesDispatched}`)
         } else {
             console.log('No enemy found!!!')
         }
@@ -686,7 +690,7 @@ const gameConfig = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true
+            // debug: true
         }
     },
     scene: [
